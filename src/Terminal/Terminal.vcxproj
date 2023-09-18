@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Dialog.h" />
+    <ClInclude Include="..\Global.h" />
     <ClInclude Include="..\Terminal.h" />
   </ItemGroup>
   <ItemGroup>

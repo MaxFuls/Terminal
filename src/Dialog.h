@@ -1,12 +1,23 @@
 #pragma once
+#pragma warning(disable:4996)
+#include <iostream>
+#include <string>
+#include "Terminal.h"
 namespace Dialog {
 
-	const char* msgs[] = { "0.Quite", "1.Create terminal with type of terminal, number of connections and state of signal",
-								"2.Create terminal only with type of terminal", "3.Connect two terminals", "4.Disconnect two terminals" };
-	const int number_of_msgs = sizeof(msgs) / sizeof(msgs[0]);
-
 	int dialog(const char* [], const int);
-
+	int D_Create_Full (Terminal::Terminal** pointer, int& size);
+	int D_Create(Terminal::Terminal** pointer, int& size);
+	int D_Connect(Terminal::Terminal** pointer, int& size);
+	int D_Disconnect(Terminal::Terminal** pointer, int& size);
+	int D_Print(Terminal::Terminal** pointer, int& size);
+	std::string getType();
+	int getNum(std::string&);
+	char getSignal();
+	void createTerminal(Terminal::Terminal**, int&, std::string&, int, char);
+	Terminal::Terminal** expansion(Terminal::Terminal**, int&);
+	Terminal::Terminal** copy(Terminal::Terminal**, Terminal::Terminal**, int&);
+	void createTerminal(Terminal::Terminal**, int&, std::string&);
 
 	template <class T>
 	T NumInput(T min, T max) {
@@ -30,4 +41,5 @@ namespace Dialog {
 			}
 		}
 	}
+
 }
