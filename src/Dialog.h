@@ -3,26 +3,38 @@
 #include <iostream>
 #include <string>
 #include "Terminal.h"
-namespace Dialog {
+
+namespace dialog {
 
 	int dialog(const char* [], const int);
-	int D_Create_Full (Terminal::Terminal**, int&);
-	int D_Create(Terminal::Terminal** , int& );
-	int D_Connect(Terminal::Terminal**, int&);
-	int D_Disconnect(Terminal::Terminal**, int& );
-	int D_Print(Terminal::Terminal**, int& );
-	int D_Print_Connections(Terminal::Terminal**, int&);
-	int D_Enter(Terminal::Terminal** pointer, int& size);
+
+
+	int D_Create_Full (terminal::bunchOfTerminals&);
+	int D_Create(terminal::bunchOfTerminals&);
+	int D_Connect(terminal::bunchOfTerminals&);
+	int D_Disconnect(terminal::bunchOfTerminals&);
+	int D_Print(terminal::bunchOfTerminals&);
+	int D_Print_Connections(terminal::bunchOfTerminals&);
+	int D_Enter(terminal::bunchOfTerminals&);
+
+
 	std::string getType();
 	int getNum(std::string&);
 	char getSignal();
-	void createTerminal(Terminal::Terminal**, int&, std::string&, int, char);
-	Terminal::Terminal** expansion(Terminal::Terminal**, int&);
-	void copyValues(Terminal::Terminal**, Terminal::Terminal**, int&);
-	void createTerminal(Terminal::Terminal**, int&, std::string&);
-	int Available(Terminal::Terminal**, int, int*);
-	void ArrErase(Terminal::Terminal**, int);
-	int AvailableDis(Terminal::Terminal**, int, int*);
+
+
+	void createTerminal(terminal::bunchOfTerminals&, std::string&, int, char);
+	void createTerminal(terminal::bunchOfTerminals&, std::string&);
+	void createTerminal(terminal::bunchOfTerminals&);
+
+
+	terminal::Terminal** expansion(terminal::bunchOfTerminals&);
+	void copyValues(terminal::Terminal**, terminal::Terminal**, int&);
+	int Available(terminal::Terminal**, int, int*);
+	void ArrErase(terminal::bunchOfTerminals& );
+	int AvailableDis(terminal::Terminal**, int, int*);
+	
+	
 	template <class T>
 	T NumInput(T min, T max) {
 		T a;
