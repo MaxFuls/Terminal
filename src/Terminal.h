@@ -16,16 +16,27 @@ namespace Terminal {
 	public:
 
 		Terminal();
-		Terminal(std::string&, int, char);
-		Terminal(std::string&);
+		Terminal(std::string&, int, char, int);
+		Terminal(std::string&, int);
 
-		std::string getType();
-		int getConnections();
-		char getSignal();
+		std::string getType() const;
+		int getConnections() const;
+		char getSignal() const;
+		int getNumber() const;
+		Terminal** getConnectedTerminals();
 
 		void setType(const std::string&);
 		void setConnections(const int&);
 		void setSignal(const char&);
 		void setNumber(const int&);
+		int setConnectedTerminals(Terminal*);
+		int resetConnectedTerminals(Terminal*);
+		
+		bool isConnected() const;
+		void print() const;
+		void scan();
+		void printConnections() const;
+		void IncreaseConnections();
+		void DecreaseConnections();
 	};
 }

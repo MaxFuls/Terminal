@@ -2,7 +2,7 @@
 #include <string>
 #include "Dialog.h"
 #include "Terminal.h"
-
+//setType
 namespace Dialog {
 
 	const char* types_of_terminals[] = { "0. Input terminal", "1. Output terminal" };
@@ -44,7 +44,7 @@ namespace Dialog {
 			return 1;
 		}
 		catch (std::exception&) {
-
+			return 0;
 		}
 	}
 	int D_Create(Terminal::Terminal** pointer, int& size) {
@@ -53,22 +53,123 @@ namespace Dialog {
 			std::cout << "Enter type of terminal" << std::endl;
 			std::string type = getType();
 			createTerminal(pointer, size, type);
+			std::cout << size << std::endl;
 			return 1;
 		}
 		catch (const std::exception&)
 		{
-
+			return 0;
 		}
 		
 	}
 	int D_Connect(Terminal::Terminal** pointer, int& size) {
 
+		std::cout << "Available terminals to connect" << std::endl;
+		int* AvailableTerminals = new int[size]();
+		int i{ 0 };
+		Available(pointer, size, AvailableTerminals);
+		int firstTerminal, secondTerminal;
+		if ((!*(AvailableTerminals))) {
+
+			std::cout << "No terminals to connect" << std::endl;
+			return 1;
+		}
+		else if (*(AvailableTerminals + 1) == 0) {
+			std::cout << "There are only one terminal" << std::endl;
+			return 1;
+		}
+		else {
+			std::cout << "Choose numbers of terminals to connect" << std::endl;
+			std::cout << "Choose the first one" << std::endl;
+			while (true) {
+				firstTerminal = NumInput<int>(-1, size+1);
+				while (firstTerminal != *(AvailableTerminals + i) && *(AvailableTerminals + i) != 0 && i < size) {
+					i++;
+				}
+				if (i != size && *(AvailableTerminals + i) != 0) {
+					i = 0;
+					break;
+				}
+				std::cout << "Incorrect number of terminal" << std::endl;
+				i = 0;
+			}
+			std::cout << "Choose the second one" << std::endl;
+			while (true) {
+				secondTerminal = NumInput<int>(-1, size+1);
+				while (secondTerminal != *(AvailableTerminals + i) && *(AvailableTerminals + i) != 0 && i < size) {
+					i++;
+				}
+				if (i != size && *(AvailableTerminals + i) != 0 && secondTerminal!=firstTerminal) {
+					i = 0;
+					break;
+				}
+				std::cout << "Incorrect number of terminal" << std::endl;
+				i = 0;
+
+			}
+			if ((*(pointer + firstTerminal - 1))->setConnectedTerminals(*(pointer + secondTerminal - 1)))
+					(*(pointer + secondTerminal - 1))->setConnectedTerminals(*(pointer + firstTerminal - 1));
+			else
+				std::cout << "This terminals are already connected"<<std::endl;
+
+
+		}
+		delete[] AvailableTerminals;
 		return 1;
 	}
 	int D_Disconnect(Terminal::Terminal** pointer, int& size){
-
-		return 1;
-	}
+		
+		int i{ 0 };
+		if (*pointer == nullptr) {
+			std::cout << "There are no terminals to disconnect" << std::endl;
+			return 1;
+		}
+		else {
+			int* Available = new int[size]();
+			int firstTerminal, secondTerminal;
+			std::cout << "Chose terminals to disconnect" << std::endl;
+			while (i < size && *(pointer + i) != nullptr) {
+				(*(pointer + i))->printConnections();
+				i++;
+			}
+			AvailableDis(pointer, size, Available);
+			if (*Available || *(Available + 1)) {
+				std::cout << "There are no terminals to disconnect" << std::endl;
+				return 1;
+			}
+			std::cout << "Choose the first terminal" << std::endl;
+			while (true) {
+				firstTerminal = NumInput<int>(-1, size + 1);
+				while (firstTerminal != *(Available + i) && *(Available + i) != 0 && i < size) {
+					i++;
+				}
+				if (i != size && *(Available + i) != 0) {
+					i = 0;
+					break;
+				}
+				std::cout << "Incorrect number of terminal" << std::endl;
+				i = 0;
+			}
+			while (true) {
+				secondTerminal = NumInput<int>(-1, size + 1);
+				while (secondTerminal != *(Available + i) && *(Available + i) != 0 && i < size) {
+					i++;
+				}
+				if (i != size && *(Available + i) != 0 && secondTerminal != firstTerminal) {
+					i = 0;
+					break;
+				}
+				std::cout << "Incorrect number of terminal" << std::endl;
+				i = 0;
+			}
+			if ((*(pointer + firstTerminal - 1))->resetConnectedTerminals(*(pointer + secondTerminal - 1)))
+				(*(pointer + secondTerminal - 1))->resetConnectedTerminals(*(pointer + firstTerminal - 1));
+			else
+				std::cout << "This terminals are already disconnected" << std::endl;
+			delete[] Available;
+			return 1;
+		}
+		}
 	int D_Print(Terminal::Terminal** pointer, int& size) {
 
 		int i{ 0 };
@@ -78,13 +179,29 @@ namespace Dialog {
 		}
 		while (*(pointer + i) != nullptr && i < size) {
 
-			std::cout << "Terminal number " << i+1 << std::endl << "Type of terminal is " << (*(pointer + i))->getType() << std::endl;
-			std::cout << "Number of connections is " << (*(pointer + i))->getConnections() << std::endl << "State of signal is ";
-			std::cout << (*pointer + i)->getSignal() << std::endl;
-			std::cout << std::endl;
+			(*(pointer + i))->print();
 			++i;
 		}
 		return 1;
+	}
+	int D_Print_Connections(Terminal::Terminal** pointer, int& size) {
+
+		int i{ 0 };
+		int j{ 0 };
+		if (*pointer == nullptr) {
+			std::cout << "No terminals" << std::endl;
+			return 1;
+		}
+		while (*(pointer + i) != nullptr && i < size) {
+			(*(pointer + i))->printConnections();
+			i++;
+		}
+		return 1;
+
+	}
+	int D_Enter(Terminal::Terminal** pointer, int& size) {
+
+
 	}
 	std::string getType() {
 
@@ -102,9 +219,10 @@ namespace Dialog {
 		if (signal == 0)
 			return '0';
 		else if (signal == 1)
-			return  '1';
-		else
+			return '1';
+		else 
 			return 'X';
+
 	}
 	int getNum(std::string& type) {
 		if (type == types_of_terminals[0])
@@ -121,11 +239,12 @@ namespace Dialog {
 		if (i == size) {
 
 			pointer = expansion(pointer, size);
-			*(pointer + i) = new Terminal::Terminal(type,connections,signal);
+			*(pointer + i) = new Terminal::Terminal(type, connections, signal, i+1);
 
 		}
 		else {
-			*(pointer + i) = new Terminal::Terminal(type, connections, signal);
+
+			*(pointer + i) = new Terminal::Terminal(type, connections, signal, i+1);
 		}
 	}
 	void createTerminal(Terminal::Terminal** pointer, int& size, std::string& type) {
@@ -137,20 +256,21 @@ namespace Dialog {
 		if (i == size) {
 
 			pointer = expansion(pointer, size);
-			*(pointer + i) = new Terminal::Terminal(type);
+			*(pointer + i) = new Terminal::Terminal(type, i+1);
 
 		}
 		else {
-			*(pointer + i) = new Terminal::Terminal(type);
+			*(pointer + i) = new Terminal::Terminal(type, i+1);
 		}
 	}
 	Terminal::Terminal** expansion(Terminal::Terminal** pointer, int& size) {
 
 		try
 		{
-			Terminal::Terminal** NewArr = new Terminal::Terminal * [2 * size];
-			pointer = copy(pointer, NewArr, size);
-			return pointer;
+			Terminal::Terminal** NewArr = new Terminal::Terminal * [2 * size]();
+			copyValues(pointer, NewArr, size);
+			delete[] pointer;
+			return NewArr;
 		}
 		catch (const std::exception&)
 		{
@@ -158,17 +278,58 @@ namespace Dialog {
 			return pointer;
 		}
 	}
-	Terminal::Terminal** copy(Terminal::Terminal** FirstPtr, Terminal::Terminal** SecondPtr, int& size) {
+	void copyValues(Terminal::Terminal** FirstPtr, Terminal::Terminal** SecondPtr, int& size) {
 
-		int i = 0;
-		for (i = 0; i < size; i++) {
+		int i{ 0 };
+		for ( i ; i < size; ++i) {
 			*(SecondPtr + i) = *(FirstPtr + i);
 		}
-		while (i < 2 * size) {
-			*(SecondPtr + i) = nullptr;
-			++i;
-		}
 		size *= 2;
-		return SecondPtr;
+	}
+	int Available(Terminal::Terminal** pointer, int size, int* AvTer) {
+
+		int i{ 0 };
+		int j{ 0 };
+		if (*pointer == nullptr) {
+
+			return 0;
+		}
+		else {
+			while (*(pointer + i) != nullptr && i<size) {
+				if ((*(pointer + i))->getType() == "Input" && (*(pointer + i))->getConnections() == 0) {
+					std::cout <<"Terminal number "<< (*(pointer + i))->getNumber()<<std::endl;
+					*(AvTer + j) = (*(pointer + i))->getNumber();
+					j++;
+				}
+				else if ((*(pointer + i))->getType() == "Output" && (*(pointer + i))->getConnections() < 3) {
+					std::cout<<"Terminal number " << (*(pointer + i))->getNumber() << std::endl;
+					*(AvTer + j) = (*(pointer + i))->getNumber();
+					j++;
+				}
+				++i;
+			}
+			
+		}
+		return 1;
+	}
+	void ArrErase(Terminal::Terminal** pointer, int size) {
+		int i{ 0 };
+		while (*(pointer + i) != nullptr && i<size) {
+			delete  *(pointer + i);
+			i++;
+		}
+	}
+	int AvailableDis(Terminal::Terminal** pointer, int size, int* arr) {
+
+		int i{ 0 };
+		int j{ 0 };
+		while (*(pointer + i) && i < size) {
+			if ((*(pointer + i))->isConnected()) {
+				*(arr + j) = (*(pointer+i))->getNumber();
+				j++;
+			}
+			i++;
+		}
+		return 1;
 	}
 }

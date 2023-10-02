@@ -6,19 +6,23 @@
 namespace Dialog {
 
 	int dialog(const char* [], const int);
-	int D_Create_Full (Terminal::Terminal** pointer, int& size);
-	int D_Create(Terminal::Terminal** pointer, int& size);
-	int D_Connect(Terminal::Terminal** pointer, int& size);
-	int D_Disconnect(Terminal::Terminal** pointer, int& size);
-	int D_Print(Terminal::Terminal** pointer, int& size);
+	int D_Create_Full (Terminal::Terminal**, int&);
+	int D_Create(Terminal::Terminal** , int& );
+	int D_Connect(Terminal::Terminal**, int&);
+	int D_Disconnect(Terminal::Terminal**, int& );
+	int D_Print(Terminal::Terminal**, int& );
+	int D_Print_Connections(Terminal::Terminal**, int&);
+	int D_Enter(Terminal::Terminal** pointer, int& size);
 	std::string getType();
 	int getNum(std::string&);
 	char getSignal();
 	void createTerminal(Terminal::Terminal**, int&, std::string&, int, char);
 	Terminal::Terminal** expansion(Terminal::Terminal**, int&);
-	Terminal::Terminal** copy(Terminal::Terminal**, Terminal::Terminal**, int&);
+	void copyValues(Terminal::Terminal**, Terminal::Terminal**, int&);
 	void createTerminal(Terminal::Terminal**, int&, std::string&);
-
+	int Available(Terminal::Terminal**, int, int*);
+	void ArrErase(Terminal::Terminal**, int);
+	int AvailableDis(Terminal::Terminal**, int, int*);
 	template <class T>
 	T NumInput(T min, T max) {
 		T a;
@@ -37,6 +41,7 @@ namespace Dialog {
 				return a;
 			else {
 				std::cout << "Repeat please" << std::endl;
+				std::cin.clear();
 				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			}
 		}

@@ -1,4 +1,2 @@
 ﻿  Dialog.cpp
-D:\Git\Terminal\src\Dialog.cpp(63): warning C4715: Dialog::D_Create: значение возвращается не при всех путях выполнения
-D:\Git\Terminal\src\Dialog.cpp(49): warning C4715: Dialog::D_Create_Full: значение возвращается не при всех путях выполнения
   Terminal.vcxproj -> D:\Git\Terminal\src\Terminal\x64\Debug\Terminal.exe
