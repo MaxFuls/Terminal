@@ -2,6 +2,13 @@
 #include <string>
 namespace terminal {
 
+	struct bunchOfTerminals {
+
+		Terminal** arr = new Terminal * [5]();
+		int size{ 5 };
+		int capacity{ 0 };
+	};
+
 
 	class Terminal{
 
@@ -13,11 +20,17 @@ namespace terminal {
 		char signal;
 		Terminal* ConnectedTerminals[3];
 
+	protected:
+
+		int setConnectedTerminals(Terminal*);
+		int reSetConnectedTerminals(Terminal*);
+
 	public:
 
 		Terminal();
 		Terminal(std::string&, int, char, int);
 		Terminal(std::string&, int);
+		Terminal(std::string&);
 
 
 		std::string getType() const;
@@ -30,8 +43,6 @@ namespace terminal {
 		void setConnections();
 		void setSignal();
 		void setNumber();
-		int setConnectedTerminals(Terminal*);
-		int resetConnectedTerminals(Terminal*);
 
 
 		void print() const;
@@ -47,11 +58,4 @@ namespace terminal {
 	};
 
 
-
-	struct bunchOfTerminals {
-
-		Terminal** arr = new Terminal * [5]();
-		int size{ 5 };
-		int capacity{ 0 };
-	};
 }

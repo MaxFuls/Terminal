@@ -35,6 +35,13 @@ namespace dialog {
 	int AvailableDis(terminal::Terminal**, int, int*);
 	
 	
+	int D_Create_With_Number();
+	int D_Create_With_Array();
+	int D_Enter_Logic_Element();
+	int D_Get_Terminal();
+	int D_Connect_Logic_Elements();
+
+
 	template <class T>
 	T NumInput(T min, T max) {
 		T a;

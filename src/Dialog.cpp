@@ -60,8 +60,16 @@ namespace dialog {
 	}
 	int D_Enter(terminal::bunchOfTerminals& bunchOfTerminals) {
 
-		createTerminal(bunchOfTerminals);
-		bunchOfTerminals.arr[bunchOfTerminals.capacity]->scan();
+		if (bunchOfTerminals.capacity == 0) {
+			std::cout << "There are no terminals to enter" << std::endl;
+			return 1;
+		}
+		std::cout << "Choose number of terminal you want to enter" << std::endl;
+		for (int i{ 1 }; i <= bunchOfTerminals.capacity; ++i)
+			std::cout << " " << i  << " ";
+		std::cout << std::endl;
+		int number = dialog::NumInput<int>(0,bunchOfTerminals.capacity +1);
+		bunchOfTerminals.arr[number-1]->scan();
 		return 1;
 	}
 	int D_Connect(terminal::bunchOfTerminals& bunchOfTerminals) {
@@ -279,7 +287,7 @@ namespace dialog {
 		int i{ 0 };
 		int j{ 0 };
 		while (*(pointer + i) && i < size) {
-			if ((*(pointer + i))->isConnected()) {
+			if ((*(pointer + i))->isFullyConnected()) {
 				*(arr + j) = (*(pointer+i))->getNumber();
 				j++;
 			}
@@ -287,4 +295,26 @@ namespace dialog {
 		}
 		return 1;
 	}
+
+	int D_Create_With_Number(){
+		
+		return 1;
+	}
+	int D_Create_With_Array(){
+	
+		return 1;
+	}
+	int D_Enter_Logic_Element(){
+		
+		return 1;
+	}
+	int D_Get_Terminal(){
+
+		return 1;
+	}
+	int D_Connect_Logic_Elements(){
+		
+		return 1;
+	}
+
 }

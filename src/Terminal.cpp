@@ -34,6 +34,16 @@ namespace terminal {
 		ConnectedTerminals[1] = nullptr;
 		ConnectedTerminals[2] = nullptr;
 	}
+	Terminal::Terminal(std::string& type) {
+
+		number = 0;
+		this->type = type;
+		connections = 0;
+		signal = 'X';
+		ConnectedTerminals[0] = nullptr;
+		ConnectedTerminals[1] = nullptr;
+		ConnectedTerminals[2] = nullptr;
+	}
 
 
 	void Terminal::IncreaseConnections() {
@@ -165,34 +175,23 @@ namespace terminal {
 	int Terminal::setConnectedTerminals(Terminal* pointer) {
 		
 		int i{ 0 };
-		while (*(ConnectedTerminals + i) != nullptr && i<3) {
-				
-			if (*(ConnectedTerminals + i) == pointer) {
-					
-				return 0;
-			}
-			else {
-				i++;
-			}
+		while (i < 3  && ConnectedTerminals[i] != nullptr) {
+			++i;
 		}
-		*(ConnectedTerminals + i) = pointer;
-		IncreaseConnections();
+		ConnectedTerminals[i] = pointer;
+		++connections;
 		return 1;
 
 	}
-	int Terminal::resetConnectedTerminals(Terminal* pointer) {
-		
+	int Terminal::reSetConnectedTerminals(Terminal* pointer) {
+
 		int i{ 0 };
-		while (ConnectedTerminals[i] != pointer && i<3) {
+		while (i < 3 && ConnectedTerminals[i] != pointer) {
 			i++;
 		}
-		if (i == 3)
-			return 0;
-		else {
-			ConnectedTerminals[i] = nullptr;
-			DecreaseConnections();
-			return 1;
-		}
+		ConnectedTerminals[i] = nullptr;
+		--connections;
+		return 1;
 	}
 
 
@@ -228,6 +227,7 @@ namespace terminal {
 		while (true) {
 			if (type == "Input") {
 				ConnectedTerminals[0] = terminal;
+				terminal->setConnectedTerminals(this);
 				++connections;
 				break;
 			}
@@ -239,6 +239,7 @@ namespace terminal {
 					++i;
 				}
 				ConnectedTerminals[i] = terminal;
+				terminal->setConnectedTerminals(this);
 				++connections;
 				break;
 			}
@@ -250,9 +251,12 @@ namespace terminal {
 	}
 	void Terminal::disconnect(Terminal* terminal) {
 		
-		if (terminal->number == number) {
-			throw std::logic_error("You try to dissconnect the same terminal");
-		}
+		if (terminal->number == number) 
+			throw std::logic_error("You try to disconnect the same terminal");
+		if (connections == 0)
+			throw std::logic_error("The first terminal is not connected at all");
+		if (terminal->connections == 0)
+			throw std::logic_error("The second terminal is not connected at all");
 		while (true) {
 			if (type == "Input") {
 				if (connections) {
@@ -262,10 +266,10 @@ namespace terminal {
 						break;
 					}
 					else
-						throw std::logic_error("This terminals is not connected");
+						throw std::logic_error("This terminals are not connected");
 				}
 				else
-					throw std::logic_error("This terminals is not connected");
+					throw std::logic_error("This terminals are not connected");
 
 			}
 			else if (type == "Output") {
@@ -274,7 +278,7 @@ namespace terminal {
 					while (i < 3 && ConnectedTerminals[i] != terminal)
 						i++;
 					if (i == 3)
-						throw std::logic_error("This terminals is not connected");
+						throw std::logic_error("This terminals are not connected");
 					else {
 						ConnectedTerminals[i] = nullptr;
 						--connections;
@@ -282,7 +286,7 @@ namespace terminal {
 					}
 				}
 				else
-					throw std::logic_error("This terminals is not connected");
+					throw std::logic_error("This terminals are not connected");
 			}
 			else {
 				std::cout << "Type of terminal is unknown. Firstly you need to initialize this terminal" << std::endl;
@@ -310,16 +314,13 @@ namespace terminal {
 	bool Terminal::isFullyConnected() const{
 		
 		if (type == "Input") {
-			if (ConnectedTerminals[0] != nullptr)
+			if (connections==1)
 				return true;
 			else
 				return false;
 		}
 		else if (type == "Output") {
-			int i{ 0 };
-			while (i < 3 && ConnectedTerminals[i] != nullptr)
-				i++;
-			if (i == 3)
+			if (connections == 3)
 				return true;
 			else
 				return false;
