@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include "Terminal.h"
+#include "LogicElement.h"
 
 namespace dialog {
 
@@ -29,18 +30,24 @@ namespace dialog {
 
 
 	terminal::Terminal** expansion(terminal::bunchOfTerminals&);
-	void copyValues(terminal::Terminal**, terminal::Terminal**, int&);
+	void copyValues(terminal::bunchOfTerminals& , terminal::Terminal**);
 	int Available(terminal::Terminal**, int, int*);
 	void ArrErase(terminal::bunchOfTerminals& );
 	int AvailableDis(terminal::Terminal**, int, int*);
 	
 	
-	int D_Create_With_Number();
-	int D_Create_With_Array();
-	int D_Enter_Logic_Element();
-	int D_Get_Terminal();
-	int D_Connect_Logic_Elements();
+	int D_Create_With_Number(logicElement::bunchOfLogicElements&);
+	int D_Create_With_Array(logicElement::bunchOfLogicElements&);
+	int D_Enter_Logic_Element(logicElement::bunchOfLogicElements&);
+	int D_Get_Terminal(logicElement::bunchOfLogicElements&);
+	int D_Connect_Logic_Elements(logicElement::bunchOfLogicElements&);
 
+	void createLogicElement(logicElement::bunchOfLogicElements&);
+	void createLogicElement(logicElement::bunchOfLogicElements& ,int, int);
+	void createLogicElement(logicElement::bunchOfLogicElements&, int);
+
+	logicElement::LogicElement** expansionLogic(logicElement::bunchOfLogicElements&);
+	void copyValuesLogic(logicElement::bunchOfLogicElements&, logicElement::LogicElement**);
 
 	template <class T>
 	T NumInput(T min, T max) {

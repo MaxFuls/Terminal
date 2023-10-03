@@ -9,9 +9,20 @@ namespace logicElement {
 		char signal;
 	};
 
+	struct TerminalsDefinitionStruct {
+
+		int length;
+		int numberOfInputTerminals;
+		int numberOfOutputTerminals;
+		TerminalsDefinition* terminalDefinitions;
+
+		TerminalsDefinitionStruct(int);
+
+	};
 	class LogicElement {
 	private:
 
+		int number;
 		terminal::Terminal** inputTerminals;
 		int numberOfInputTerminals;
 		terminal::Terminal** outputTerminals;
@@ -20,9 +31,15 @@ namespace logicElement {
 	public:
 
 		LogicElement();
-		LogicElement(int, int);
-		LogicElement(TerminalsDefinition*);
+		LogicElement(int, int, int);
+		LogicElement(const TerminalsDefinitionStruct&, int);
 
 	};
 
+	struct bunchOfLogicElements {
+
+		int size;
+		int capacity = 5;
+		LogicElement** logicElements = new LogicElement*[5]();
+	};
 }

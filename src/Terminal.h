@@ -2,14 +2,6 @@
 #include <string>
 namespace terminal {
 
-	struct bunchOfTerminals {
-
-		Terminal** arr = new Terminal * [5]();
-		int size{ 5 };
-		int capacity{ 0 };
-	};
-
-
 	class Terminal{
 
 	private:
@@ -57,5 +49,11 @@ namespace terminal {
 		void DecreaseConnections();
 	};
 
+	struct bunchOfTerminals {
+
+		Terminal** arr = new Terminal * [5]();
+		int size{ 5 };
+		int capacity{ 0 };
+	};
 
 }

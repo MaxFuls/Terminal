@@ -2,6 +2,7 @@
 #include <string>
 #include "Dialog.h"
 #include "Terminal.h"
+#include "LogicElement.h"
 
 namespace dialog {
 
@@ -180,55 +181,47 @@ namespace dialog {
 
 	void createTerminal(terminal::bunchOfTerminals& bunchOfTerminals, std::string& type, int connections, char signal) {
 
-		int i{ 0 };
-		while (i < bunchOfTerminals.size && bunchOfTerminals.arr[i] != nullptr) {
-			++i;
-		}
-		if (i == bunchOfTerminals.size) {
+
+		if (bunchOfTerminals.size == bunchOfTerminals.capacity) {
 
 			bunchOfTerminals.arr = expansion(bunchOfTerminals);
-			bunchOfTerminals.arr[i] = new terminal::Terminal(type, connections, signal, i + 1);
+			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal(type, connections, signal, bunchOfTerminals.capacity + 1);
 			++bunchOfTerminals.capacity;
 
 		}
 		else {
 
-			bunchOfTerminals.arr[i] = new terminal::Terminal(type, connections, signal, i + 1);
+			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal(type, connections, signal, bunchOfTerminals.capacity + 1);
 			++bunchOfTerminals.capacity;
 		}
 	}
 	void createTerminal(terminal::bunchOfTerminals& bunchOfTerminals, std::string& type) {
 
-		int i{ 0 };
-		while (i < bunchOfTerminals.size && bunchOfTerminals.arr[i] != nullptr) {
-			++i;
-		}
-		if (i == bunchOfTerminals.size) {
+		if (bunchOfTerminals.size == bunchOfTerminals.capacity) {
 
 			bunchOfTerminals.arr = expansion(bunchOfTerminals);
-			bunchOfTerminals.arr[i] = new terminal::Terminal(type, i + 1);
+			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal(type, bunchOfTerminals.capacity + 1);
 			++bunchOfTerminals.capacity;
+
 		}
 		else {
-			bunchOfTerminals.arr[i] = new terminal::Terminal(type, i + 1);
+
+			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal(type, bunchOfTerminals.capacity + 1);
 			++bunchOfTerminals.capacity;
 		}
 	}
 	void createTerminal(terminal::bunchOfTerminals& bunchOfTerminals) {
 
-		int i{ 0 };
-		while (i < bunchOfTerminals.size && bunchOfTerminals.arr[i] != nullptr) {
-			++i;
-		}
-		if (i == bunchOfTerminals.size) {
+		if (bunchOfTerminals.size == bunchOfTerminals.capacity) {
 
 			bunchOfTerminals.arr = expansion(bunchOfTerminals);
-			bunchOfTerminals.arr[i] = new terminal::Terminal();
+			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal();
 			++bunchOfTerminals.capacity;
 
 		}
 		else {
-			bunchOfTerminals.arr[i] = new terminal::Terminal();
+
+			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal();
 			++bunchOfTerminals.capacity;
 		}
 	}
@@ -237,17 +230,17 @@ namespace dialog {
 	terminal::Terminal** expansion(terminal::bunchOfTerminals& bunchOfTerminals) {
 
 		terminal::Terminal** NewArr = new terminal::Terminal * [2 * bunchOfTerminals.size]();
-		copyValues(bunchOfTerminals.arr, NewArr, bunchOfTerminals.size);
+		copyValues(bunchOfTerminals, NewArr);
 		delete[] bunchOfTerminals.arr;
 		return NewArr;
 	}
-	void copyValues(terminal::Terminal** FirstPtr, terminal::Terminal** SecondPtr, int& size) {
+	void copyValues(terminal::bunchOfTerminals& bunchOfTerminals, terminal::Terminal** SecondPtr) {
 
 		int i{ 0 };
-		for ( i ; i < size; ++i) {
-			*(SecondPtr + i) = *(FirstPtr + i);
+		for ( i ; i < bunchOfTerminals.size; ++i) {
+			SecondPtr[i] = bunchOfTerminals.arr[i];
 		}
-		size *= 2;
+		bunchOfTerminals.size *= 2;
 	}
 	int Available(terminal::Terminal** pointer, int size, int* AvTer) {
 
@@ -296,25 +289,69 @@ namespace dialog {
 		return 1;
 	}
 
-	int D_Create_With_Number(){
+	int D_Create_With_Number(logicElement::bunchOfLogicElements& bunchOfLogicElements){
 		
+		int numberOfInputTerminals;
+		int numberOfOutputTerminals;
+		std::cout << "Enter number of input terminals" << std::endl;
+		numberOfInputTerminals = NumInput<int>(0,std::numeric_limits<int>::max());
+		std::cout << "Enter number of output terminals" << std::endl;
+		numberOfOutputTerminals = NumInput<int>(0, std::numeric_limits<int>::max());
+		createLogicElement(bunchOfLogicElements, numberOfInputTerminals, numberOfOutputTerminals);
 		return 1;
 	}
-	int D_Create_With_Array(){
+	int D_Create_With_Array(logicElement::bunchOfLogicElements& bunchOfLogicElements){
 	
 		return 1;
 	}
-	int D_Enter_Logic_Element(){
+	int D_Enter_Logic_Element(logicElement::bunchOfLogicElements& bunchOfLogicElements){
 		
 		return 1;
 	}
-	int D_Get_Terminal(){
+	int D_Get_Terminal(logicElement::bunchOfLogicElements& bunchOfLogicElements){
 
 		return 1;
 	}
-	int D_Connect_Logic_Elements(){
+	int D_Connect_Logic_Elements(logicElement::bunchOfLogicElements& bunchOfLogicElements){
 		
 		return 1;
 	}
 
+	void createLogicElement(logicElement::bunchOfLogicElements& bunchOfLogicElements) {
+
+	}
+	void createLogicElement(logicElement::bunchOfLogicElements& bunchOfLogicElements,int numberOfInputTerminals, int numberOfOutputTerminals) {
+
+		if (bunchOfLogicElements.capacity == bunchOfLogicElements.size) {
+
+			expansionLogic(bunchOfLogicElements);
+			bunchOfLogicElements.logicElements[bunchOfLogicElements.size] = new logicElement::LogicElement(numberOfInputTerminals, numberOfOutputTerminals,
+				bunchOfLogicElements.size + 1);
+			++bunchOfLogicElements.size;
+
+		}
+		else {
+			bunchOfLogicElements.logicElements[bunchOfLogicElements.size] = new logicElement::LogicElement(numberOfInputTerminals, numberOfOutputTerminals,
+																														bunchOfLogicElements.size + 1);
+			++bunchOfLogicElements.size;
+		}
+	}
+	void createLogicElement(logicElement::bunchOfLogicElements& bunchOfLogicElements, int) {
+
+	}
+
+	logicElement::LogicElement** expansionLogic(logicElement::bunchOfLogicElements& bunchOfLogicElements) {
+
+		logicElement::LogicElement** NewArr = new logicElement::LogicElement * [2 * bunchOfLogicElements.capacity];
+		copyValuesLogic(bunchOfLogicElements, NewArr);
+		delete[] bunchOfLogicElements.logicElements;
+		return NewArr;
+	}
+	void copyValuesLogic(logicElement::bunchOfLogicElements& bunchOfLogicElements, logicElement::LogicElement** NewArr) {
+
+		for (int i{ 0 }; i < bunchOfLogicElements.capacity; ++i) {
+			NewArr[i] = bunchOfLogicElements.logicElements[i];
+		}
+		bunchOfLogicElements.capacity *= 2;
+	}
 }

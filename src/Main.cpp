@@ -16,11 +16,12 @@ namespace dialog {
 												"2.Create with array of definitions of terminals", "3.Enter terminals of logic element",
 													"4.Connect terminals from different logic elements", "5.Get information about terminal in logic element"};
 	const int numberOfMessagesForLogicElement = sizeof(messagesForLogicElement) / sizeof(messagesForLogicElement[0]);
-	int (*dialogFunctionsForLogicElement[])() = { D_Create_With_Number, D_Create_With_Array, D_Enter_Logic_Element, D_Connect_Logic_Elements, D_Get_Terminal};
+	int (*dialogFunctionsForLogicElement[])(logicElement::bunchOfLogicElements&) = { D_Create_With_Number, D_Create_With_Array, D_Enter_Logic_Element, D_Connect_Logic_Elements, D_Get_Terminal};
 }
 int main() {
 
 	terminal::bunchOfTerminals bunchOfTerminals;
+	logicElement::bunchOfLogicElements bunchOfLogicElements;
 	int i{ 0 };
 	int al1;
 	int al2;
@@ -33,7 +34,7 @@ int main() {
 			}
 			else {
 				while (al1 = dialog::dialog(dialog::messagesForLogicElement, dialog::numberOfMessagesForLogicElement))
-					dialog::dialogFunctionsForLogicElement[al1 - 1]();
+					dialog::dialogFunctionsForLogicElement[al1 - 1](bunchOfLogicElements);
 			}
 		}
 		dialog::ArrErase(bunchOfTerminals);
