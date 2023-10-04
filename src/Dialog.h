@@ -41,13 +41,16 @@ namespace dialog {
 	int D_Enter_Logic_Element(logicElement::bunchOfLogicElements&);
 	int D_Get_Terminal(logicElement::bunchOfLogicElements&);
 	int D_Connect_Logic_Elements(logicElement::bunchOfLogicElements&);
+	int D_Print_Logic_Elements(logicElement::bunchOfLogicElements&);
 
 	void createLogicElement(logicElement::bunchOfLogicElements&);
 	void createLogicElement(logicElement::bunchOfLogicElements& ,int, int);
-	void createLogicElement(logicElement::bunchOfLogicElements&, int);
+	void createLogicElement(logicElement::bunchOfLogicElements&, logicElement::TerminalsDefinitionStruct&);
 
 	logicElement::LogicElement** expansionLogic(logicElement::bunchOfLogicElements&);
 	void copyValuesLogic(logicElement::bunchOfLogicElements&, logicElement::LogicElement**);
+
+	void logicErase(logicElement::bunchOfLogicElements&);
 
 	template <class T>
 	T NumInput(T min, T max) {

@@ -54,6 +54,7 @@ namespace terminal {
 		Terminal** arr = new Terminal * [5]();
 		int size{ 5 };
 		int capacity{ 0 };
+		~bunchOfTerminals();
 	};
 
 }

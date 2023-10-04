@@ -14,15 +14,17 @@ namespace dialog {
 
 	const char* messagesForLogicElement[] = {"0.Quite", "1.Create terminal with number of input and output terminals",
 												"2.Create with array of definitions of terminals", "3.Enter terminals of logic element",
-													"4.Connect terminals from different logic elements", "5.Get information about terminal in logic element"};
+													"4.Connect terminals from different logic elements", "5.Get information about terminal in logic element",
+															"6.Print logic elements" };
 	const int numberOfMessagesForLogicElement = sizeof(messagesForLogicElement) / sizeof(messagesForLogicElement[0]);
-	int (*dialogFunctionsForLogicElement[])(logicElement::bunchOfLogicElements&) = { D_Create_With_Number, D_Create_With_Array, D_Enter_Logic_Element, D_Connect_Logic_Elements, D_Get_Terminal};
+	int (*dialogFunctionsForLogicElement[])(logicElement::bunchOfLogicElements&) = { D_Create_With_Number, D_Create_With_Array,
+																						D_Enter_Logic_Element, D_Connect_Logic_Elements, D_Get_Terminal,
+																							D_Print_Logic_Elements};
 }
 int main() {
 
 	terminal::bunchOfTerminals bunchOfTerminals;
 	logicElement::bunchOfLogicElements bunchOfLogicElements;
-	int i{ 0 };
 	int al1;
 	int al2;
 	try
@@ -37,14 +39,10 @@ int main() {
 					dialog::dialogFunctionsForLogicElement[al1 - 1](bunchOfLogicElements);
 			}
 		}
-		dialog::ArrErase(bunchOfTerminals);
-		delete[] bunchOfTerminals.arr;
 	}
 	catch (const std::runtime_error& ra)
 	{
 		std::cout << ra.what() << std::endl;
-		dialog::ArrErase(bunchOfTerminals);
-		delete[] bunchOfTerminals.arr;
 		return 1;
 	}
 	return 0;

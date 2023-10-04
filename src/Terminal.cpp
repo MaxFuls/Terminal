@@ -4,6 +4,15 @@
 #include <iostream>
 namespace terminal {
 
+	bunchOfTerminals::~bunchOfTerminals() {
+
+		if (capacity != 0) {
+			for (int i{ 0 }; i < capacity; ++i)
+				delete arr[i];
+		}
+		delete[] arr;
+	}
+
 	Terminal::Terminal() {
 
 		number = 0;

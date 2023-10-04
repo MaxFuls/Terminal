@@ -172,10 +172,16 @@ namespace dialog {
 
 	}
 	int getNum(std::string& type) {
-		if (type == types_of_terminals[0])
+
+		std::cout << "Enter number of connections" << std::endl;
+		if (type == "Input") {
+			std::cout << "For input terminal max number of connections is 1" << std::endl;
 			return NumInput(-1, 2);
-		else
+		}
+		else {
+			std::cout << "For onput terminal max number of connections is 3" << std::endl;
 			return NumInput(-1, 4);
+		}
 	}
 
 
@@ -268,13 +274,6 @@ namespace dialog {
 		}
 		return 1;
 	}
-	void ArrErase(terminal::bunchOfTerminals& bunchOfTerminals) {
-		int i{ 0 };
-		while (i < bunchOfTerminals.size && bunchOfTerminals.arr[i] != nullptr) {
-			delete  bunchOfTerminals.arr[i];
-			++i;
-		}
-	}
 	int AvailableDis(terminal::Terminal** pointer, int size, int* arr) {
 
 		int i{ 0 };
@@ -302,6 +301,12 @@ namespace dialog {
 	}
 	int D_Create_With_Array(logicElement::bunchOfLogicElements& bunchOfLogicElements){
 	
+		std::cout << "Enter number of terminals you want to create" << std::endl;
+		int numberOfTerminals = NumInput<int>(0, std::numeric_limits<int>::max());
+		logicElement::TerminalsDefinitionStruct terminalDefinitionStruct(numberOfTerminals);
+		for (int i{ 0 }; i < numberOfTerminals; ++i)
+			terminalDefinitionStruct.scan(i);
+		createLogicElement(bunchOfLogicElements, terminalDefinitionStruct);
 		return 1;
 	}
 	int D_Enter_Logic_Element(logicElement::bunchOfLogicElements& bunchOfLogicElements){
@@ -314,6 +319,16 @@ namespace dialog {
 	}
 	int D_Connect_Logic_Elements(logicElement::bunchOfLogicElements& bunchOfLogicElements){
 		
+		return 1;
+	}
+	int D_Print_Logic_Elements(logicElement::bunchOfLogicElements& bunchOfLogicElements) {
+
+		if (bunchOfLogicElements.size == 0) {
+			std::cout << "Thera are no logic elements to print" << std::endl;
+			return 1;
+		}
+		for (int i{ 0 }; i < bunchOfLogicElements.size; ++i)
+			bunchOfLogicElements.logicElements[i]->print();
 		return 1;
 	}
 
@@ -336,8 +351,20 @@ namespace dialog {
 			++bunchOfLogicElements.size;
 		}
 	}
-	void createLogicElement(logicElement::bunchOfLogicElements& bunchOfLogicElements, int) {
+	void createLogicElement(logicElement::bunchOfLogicElements& bunchOfLogicElements, logicElement::TerminalsDefinitionStruct& terminalDefinitionStruct) {
 
+		if (bunchOfLogicElements.size == bunchOfLogicElements.capacity) {
+
+			bunchOfLogicElements.logicElements =  expansionLogic(bunchOfLogicElements);
+			bunchOfLogicElements.logicElements[bunchOfLogicElements.size] = new logicElement::LogicElement(terminalDefinitionStruct,
+				bunchOfLogicElements.size + 1);
+			++bunchOfLogicElements.size;
+		}
+		else {
+			bunchOfLogicElements.logicElements[bunchOfLogicElements.size] = new logicElement::LogicElement(terminalDefinitionStruct,
+																												bunchOfLogicElements.size + 1);
+			++bunchOfLogicElements.size;
+		}
 	}
 
 	logicElement::LogicElement** expansionLogic(logicElement::bunchOfLogicElements& bunchOfLogicElements) {
@@ -354,4 +381,5 @@ namespace dialog {
 		}
 		bunchOfLogicElements.capacity *= 2;
 	}
+
 }

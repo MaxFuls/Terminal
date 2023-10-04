@@ -7,18 +7,23 @@ namespace logicElement {
 		std::string type;
 		int connections;
 		char signal;
+
+		void scan();
 	};
 
 	struct TerminalsDefinitionStruct {
 
-		int length;
-		int numberOfInputTerminals;
-		int numberOfOutputTerminals;
-		TerminalsDefinition* terminalDefinitions;
+		int length = 0;
+		int numberOfInputTerminals = 0;
+		int numberOfOutputTerminals = 0;
+		TerminalsDefinition* terminalDefinitions = nullptr;
 
 		TerminalsDefinitionStruct(int);
+		~TerminalsDefinitionStruct();
+		void scan(int);
 
 	};
+	
 	class LogicElement {
 	private:
 
@@ -33,13 +38,25 @@ namespace logicElement {
 		LogicElement();
 		LogicElement(int, int, int);
 		LogicElement(const TerminalsDefinitionStruct&, int);
+		~LogicElement();
+
+		int getNumber();
+		int getNumberOfInput();
+		int getNumberOfOutput();
+
+		void print();
+		void scan();
+
+
 
 	};
 
 	struct bunchOfLogicElements {
 
-		int size;
+		int size = 0;
 		int capacity = 5;
 		LogicElement** logicElements = new LogicElement*[5]();
+
+		~bunchOfLogicElements();
 	};
 }
