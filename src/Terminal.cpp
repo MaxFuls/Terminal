@@ -20,6 +20,7 @@ namespace terminal {
 		type = "unknown";
 		connections = 0;
 		signal = 'X';
+		//std::fill
 		ConnectedTerminals[0] = nullptr;
 		ConnectedTerminals[1] = nullptr;
 		ConnectedTerminals[2] = nullptr;
