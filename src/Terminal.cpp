@@ -2,6 +2,7 @@
 #include "Dialog.h"
 #include <string>
 #include <iostream>
+#include <format>
 namespace terminal {
 
 	bunchOfTerminals::~bunchOfTerminals() {
@@ -72,7 +73,7 @@ namespace terminal {
 			std::cout << "Type of terminal is unknow, firstly enter type of terminal" << std::endl;
 
 	}
-	void Terminal::DecreaseConnections() {
+	void Terminal::DecreaseConnections(){
 		if (type == "Input") {
 
 			if (connections > 0)
@@ -103,7 +104,7 @@ namespace terminal {
 
 		return signal;
 	}
-	int Terminal::getNumber() const {
+	int Terminal::getNumber() const{
 
 		return number;
 	}
@@ -171,7 +172,7 @@ namespace terminal {
 			}
 		}
 	}
-	void Terminal::setNumber() {
+	void Terminal::setNumber(int number) {
 			
 		if (number > 0) 
 			this->number = number;
@@ -216,28 +217,31 @@ namespace terminal {
 	}
 	void Terminal::print() const {
 
-		std::cout << "Terminal number " << number << std::endl << "Type of terminal is " << type << std::endl;
-		std::cout << "Number of connections is " << connections << std::endl << "State of signal is " << signal;
-		std::cout << std::endl;
-		std::cout << std::endl;
+		std::string s1 = "Terminal number";
+		std::string s2 = "Type of terminal is";
+		std::string s3 = "Number of connections is";
+		std::string s4 = "State of signal is";
+		std::string s5 = std::format("{} {}\n{} {}\n{} {}\n{} {}\n\n", s1, number, s2, type, s3, connections, s4, signal);
+		std::cout << s5;
 	}
 
 	void Terminal::connect(Terminal* terminal) {
 
 		if (terminal->number == number)
 			throw std::logic_error("You try to connect the same terminal");
-		
-		if (isFullyConnected()) 
-			throw std::logic_error("First terminal can not be connected more, firstly you need to disconnect it");
-		
+		if (type=="Input")
+			throw std::logic_error("The first terminal need to be output");
+		if (terminal->type == "Output")
+			throw std::logic_error("The second terminal need to be input");
+		if (isFullyConnected())
+			throw std::logic_error("The first terminal can not be connected more, firstly you need to disconnect it");
 		if (terminal->isFullyConnected())
-			throw std::logic_error("First terminal can not be connected more, firstly you need to disconnect it");
+			throw std::logic_error("The second terminal can not be connected more, firstly you need to disconnect it");
 		
 		while (true) {
 			if (type == "Input") {
-				ConnectedTerminals[0] = terminal;
-				terminal->setConnectedTerminals(this);
-				++connections;
+				
+				std::cout << "First terminal need to be output" << std::endl;
 				break;
 			}
 			else if (type == "Output") {
@@ -259,48 +263,24 @@ namespace terminal {
 		}
 	}
 	void Terminal::disconnect(Terminal* terminal) {
-		
-		if (terminal->number == number) 
-			throw std::logic_error("You try to disconnect the same terminal");
-		if (connections == 0)
-			throw std::logic_error("The first terminal is not connected at all");
-		if (terminal->connections == 0)
-			throw std::logic_error("The second terminal is not connected at all");
-		while (true) {
-			if (type == "Input") {
-				if (connections) {
-					if (ConnectedTerminals[0] == terminal) {
-						ConnectedTerminals[0] = nullptr;
-						--connections;
-						break;
-					}
-					else
-						throw std::logic_error("This terminals are not connected");
-				}
-				else
-					throw std::logic_error("This terminals are not connected");
 
-			}
-			else if (type == "Output") {
-				if (connections) {
-					int i{ 0 };
-					while (i < 3 && ConnectedTerminals[i] != terminal)
-						i++;
-					if (i == 3)
-						throw std::logic_error("This terminals are not connected");
-					else {
-						ConnectedTerminals[i] = nullptr;
-						--connections;
-						break;
-					}
-				}
-				else
-					throw std::logic_error("This terminals are not connected");
-			}
-			else {
-				std::cout << "Type of terminal is unknown. Firstly you need to initialize this terminal" << std::endl;
-				scan();
-			}
+		if (terminal->number == number)
+			throw std::logic_error("You try to disconnect the same terminal");
+		if (type == "Input")
+			throw std::logic_error("The first terminal need to be output");
+		if (!connections)
+			throw std::logic_error("The first terminal is not connected at all");
+		if (!terminal->connections)
+			throw std::logic_error("The second terminal is not connected at all");
+		int i{ 0 };
+		while (i < 3 && ConnectedTerminals[i] != terminal)
+			++i;
+		if (i == 3)
+			throw std::logic_error("This terminals are not connected");
+		else {
+			ConnectedTerminals[i] = nullptr;
+			terminal->reSetConnectedTerminals(this);
+			--connections;
 		}
 	}
 	
@@ -308,11 +288,11 @@ namespace terminal {
 	void Terminal::printConnections() const{
 
 		int i{ 0 };
-		if (connections) {
+		if (ConnectedTerminals[0]!=nullptr) {
 			std::cout << "Terminal " << number << " is connected with terminals ";
-			while (i < 3 && ConnectedTerminals[i]) {
+			while (i < 3 && ConnectedTerminals[i]!=nullptr) {
 				std::cout << ConnectedTerminals[i]->getNumber() << " ";
-				i++;
+				++i;
 			}
 			std::cout << std::endl;
 		}
@@ -339,5 +319,4 @@ namespace terminal {
 		}
 	}
 	
-
 }

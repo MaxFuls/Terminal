@@ -12,22 +12,16 @@ namespace dialog {
 	const int number_of_signals = sizeof(types_of_signals) / sizeof(types_of_signals[0]);
 
 	int dialog(const char* msgs[], const int number_of_msgs) {
-		
+
 		for (int i{ 0 }; i < number_of_msgs; i++) {
-			
+
 			std::puts(msgs[i]);
 
 		}
 		int alternative;
-		try
-		{
-			alternative = NumInput<int>(-1, number_of_msgs);
-			return alternative;
-		}
-		catch (const std::exception&)
-		{
-			throw;
-		}
+
+		alternative = NumInput<int>(-1, number_of_msgs);
+		return alternative;
 	}
 	int D_Create_Full(terminal::bunchOfTerminals& bunchOfTerminals) {
 
@@ -48,45 +42,61 @@ namespace dialog {
 			std::cout << "Enter type of signal" << std::endl;
 			signal = getSignal();
 		}
-		createTerminal(bunchOfTerminals, type, connections, signal);
-		return 1;
+		try {
+			createTerminal(bunchOfTerminals, type, connections, signal);
+			return 1;
+		}
+		catch (std::bad_alloc& ba) {
+			std::cout << "Not enough memory to create new terminal" << std::endl;
+			return 1;
+		}
 	}
 	int D_Create(terminal::bunchOfTerminals& bunchOfTerminals) {
 
 		std::cout << "Enter type of terminal" << std::endl;
 		std::string type = getType();
-		createTerminal(bunchOfTerminals, type);
-		return 1;
+		try {
+			createTerminal(bunchOfTerminals, type);
+			return 1;
+		}
+		catch (std::bad_alloc& ba) {
+
+			std::cout << "Not enough memory to create new terminal" << std::endl;
+			return 1;
+		}
 
 	}
 	int D_Enter(terminal::bunchOfTerminals& bunchOfTerminals) {
 
-		if (bunchOfTerminals.capacity == 0) {
+		if (bunchOfTerminals.size == 0) {
 			std::cout << "There are no terminals to enter" << std::endl;
 			return 1;
 		}
 		std::cout << "Choose number of terminal you want to enter" << std::endl;
-		for (int i{ 1 }; i <= bunchOfTerminals.capacity; ++i)
-			std::cout << " " << i  << " ";
+		for (int i{ 1 }; i <= bunchOfTerminals.size; ++i)
+			std::cout <<  i  << " ";
 		std::cout << std::endl;
-		int number = dialog::NumInput<int>(0,bunchOfTerminals.capacity +1);
+		int number = dialog::NumInput<int>(0,bunchOfTerminals.size +1);
 		bunchOfTerminals.arr[number-1]->scan();
 		return 1;
 	}
 	int D_Connect(terminal::bunchOfTerminals& bunchOfTerminals) {
 
 		try {
-			if (bunchOfTerminals.capacity == 0)
+			if (bunchOfTerminals.size == 0)
 				throw std::logic_error("There are no terminals to connect");
-			if (bunchOfTerminals.capacity == 1)
+			if (bunchOfTerminals.size == 1)
 				throw std::logic_error("There is only one terminal to connect");
 			int firstTerminal;
 			int secondTerminal;
 			std::cout << "Choose terminals to connect" << std::endl;
+			for (int i{ 1 }; i <= bunchOfTerminals.size; ++i)
+				std::cout << i << " ";
+			std::cout << std::endl;
 			std::cout << "Enter number of the first terminal" << std::endl;
-			firstTerminal = NumInput<int>(0, bunchOfTerminals.capacity + 1);
+			firstTerminal = NumInput<int>(0, bunchOfTerminals.size + 1);
 			std::cout << "Enter number of the second terminal" << std::endl;
-			secondTerminal = NumInput<int>(0, bunchOfTerminals.capacity + 1);
+			secondTerminal = NumInput<int>(0, bunchOfTerminals.size + 1);
 			bunchOfTerminals.arr[firstTerminal - 1]->connect(bunchOfTerminals.arr[secondTerminal - 1]);
 			return 1;
 		}
@@ -98,17 +108,20 @@ namespace dialog {
 	int D_Disconnect(terminal::bunchOfTerminals& bunchOfTerminals) {
 		try
 		{
-			if (bunchOfTerminals.capacity == 0)
+			if (bunchOfTerminals.size == 0)
 				throw std::logic_error("There are no terminals to disconnect");
-			if (bunchOfTerminals.capacity == 1)
+			if (bunchOfTerminals.size == 1)
 				throw std::logic_error("There is only one terminal to disconnect");
 			int firstTerminal;
 			int secondTerminal;
 			std::cout << "Choose terminals to disconnect" << std::endl;
+			for (int i{ 1 }; i <= bunchOfTerminals.size; ++i)
+				std::cout << i << " ";
+			std::cout << std::endl;
 			std::cout << "Enter number of the first terminal" << std::endl;
-			firstTerminal = NumInput<int>(0, bunchOfTerminals.capacity + 1);
+			firstTerminal = NumInput<int>(0, bunchOfTerminals.size + 1);
 			std::cout << "Enter number of the second terminal" << std::endl;
-			secondTerminal = NumInput<int>(0, bunchOfTerminals.capacity + 1);
+			secondTerminal = NumInput<int>(0, bunchOfTerminals.size + 1);
 			bunchOfTerminals.arr[firstTerminal - 1]->disconnect(bunchOfTerminals.arr[secondTerminal - 1]);
 			return 1;
 		}
@@ -122,11 +135,11 @@ namespace dialog {
 	int D_Print(terminal::bunchOfTerminals& bunchOfTerminals) {
 
 		int i{ 0 };
-		if (bunchOfTerminals.arr[0] == nullptr) {
+		if (bunchOfTerminals.size==0) {
 			std::cout << "No terminals"<<std::endl;
 			return 1;
 		}
-		while (i < bunchOfTerminals.size && bunchOfTerminals.arr[i] != nullptr) {
+		while (i < bunchOfTerminals.size) {
 
 			bunchOfTerminals.arr[i]->print();
 			++i;
@@ -136,12 +149,11 @@ namespace dialog {
 	int D_Print_Connections(terminal::bunchOfTerminals& bunchOfTerminals) {
 
 		int i{ 0 };
-		int j{ 0 };
-		if (bunchOfTerminals.arr[0] == nullptr) {
+		if (bunchOfTerminals.size==0) {
 			std::cout << "No terminals" << std::endl;
 			return 1;
 		}
-		while (i < bunchOfTerminals.size && bunchOfTerminals.arr[i] != nullptr) {
+		while (i < bunchOfTerminals.size) {
 			bunchOfTerminals.arr[i]->printConnections();
 			++i;
 		}
@@ -153,11 +165,8 @@ namespace dialog {
 	std::string getType() {
 
 		if (dialog(types_of_terminals, number_of_types) == 0)
-
 			return "Input";
-
-		else 
-
+		else
 			return "Output";
 	}
 	char getSignal() {
@@ -173,13 +182,10 @@ namespace dialog {
 	}
 	int getNum(std::string& type) {
 
-		std::cout << "Enter number of connections" << std::endl;
 		if (type == "Input") {
-			std::cout << "For input terminal max number of connections is 1" << std::endl;
 			return NumInput(-1, 2);
 		}
 		else {
-			std::cout << "For onput terminal max number of connections is 3" << std::endl;
 			return NumInput(-1, 4);
 		}
 	}
@@ -191,14 +197,14 @@ namespace dialog {
 		if (bunchOfTerminals.size == bunchOfTerminals.capacity) {
 
 			bunchOfTerminals.arr = expansion(bunchOfTerminals);
-			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal(type, connections, signal, bunchOfTerminals.capacity + 1);
-			++bunchOfTerminals.capacity;
+			bunchOfTerminals.arr[bunchOfTerminals.size] = new terminal::Terminal(type, connections, signal, bunchOfTerminals.size + 1);
+			++bunchOfTerminals.size;
 
 		}
 		else {
 
-			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal(type, connections, signal, bunchOfTerminals.capacity + 1);
-			++bunchOfTerminals.capacity;
+			bunchOfTerminals.arr[bunchOfTerminals.size] = new terminal::Terminal(type, connections, signal, bunchOfTerminals.size + 1);
+			++bunchOfTerminals.size;
 		}
 	}
 	void createTerminal(terminal::bunchOfTerminals& bunchOfTerminals, std::string& type) {
@@ -206,14 +212,14 @@ namespace dialog {
 		if (bunchOfTerminals.size == bunchOfTerminals.capacity) {
 
 			bunchOfTerminals.arr = expansion(bunchOfTerminals);
-			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal(type, bunchOfTerminals.capacity + 1);
-			++bunchOfTerminals.capacity;
+			bunchOfTerminals.arr[bunchOfTerminals.size] = new terminal::Terminal(type, bunchOfTerminals.size + 1);
+			++bunchOfTerminals.size;
 
 		}
 		else {
 
-			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal(type, bunchOfTerminals.capacity + 1);
-			++bunchOfTerminals.capacity;
+			bunchOfTerminals.arr[bunchOfTerminals.size] = new terminal::Terminal(type, bunchOfTerminals.size + 1);
+			++bunchOfTerminals.size;
 		}
 	}
 	void createTerminal(terminal::bunchOfTerminals& bunchOfTerminals) {
@@ -221,21 +227,21 @@ namespace dialog {
 		if (bunchOfTerminals.size == bunchOfTerminals.capacity) {
 
 			bunchOfTerminals.arr = expansion(bunchOfTerminals);
-			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal();
-			++bunchOfTerminals.capacity;
+			bunchOfTerminals.arr[bunchOfTerminals.size] = new terminal::Terminal();
+			++bunchOfTerminals.size;
 
 		}
 		else {
 
-			bunchOfTerminals.arr[bunchOfTerminals.capacity] = new terminal::Terminal();
-			++bunchOfTerminals.capacity;
+			bunchOfTerminals.arr[bunchOfTerminals.size] = new terminal::Terminal();
+			++bunchOfTerminals.size;
 		}
 	}
 
 
 	terminal::Terminal** expansion(terminal::bunchOfTerminals& bunchOfTerminals) {
 
-		terminal::Terminal** NewArr = new terminal::Terminal * [2 * bunchOfTerminals.size]();
+		terminal::Terminal** NewArr = new terminal::Terminal * [2 * bunchOfTerminals.capacity]();
 		copyValues(bunchOfTerminals, NewArr);
 		delete[] bunchOfTerminals.arr;
 		return NewArr;
@@ -243,50 +249,13 @@ namespace dialog {
 	void copyValues(terminal::bunchOfTerminals& bunchOfTerminals, terminal::Terminal** SecondPtr) {
 
 		int i{ 0 };
-		for ( i ; i < bunchOfTerminals.size; ++i) {
+		for ( i ; i < bunchOfTerminals.capacity; ++i) {
 			SecondPtr[i] = bunchOfTerminals.arr[i];
 		}
-		bunchOfTerminals.size *= 2;
+		bunchOfTerminals.capacity *= 2;
 	}
-	int Available(terminal::Terminal** pointer, int size, int* AvTer) {
 
-		int i{ 0 };
-		int j{ 0 };
-		if (*pointer == nullptr) {
-
-			return 0;
-		}
-		else {
-			while (*(pointer + i) != nullptr && i<size) {
-				if ((*(pointer + i))->getType() == "Input" && (*(pointer + i))->getConnections() == 0) {
-					std::cout <<"Terminal number "<< (*(pointer + i))->getNumber()<<std::endl;
-					*(AvTer + j) = (*(pointer + i))->getNumber();
-					j++;
-				}
-				else if ((*(pointer + i))->getType() == "Output" && (*(pointer + i))->getConnections() < 3) {
-					std::cout<<"Terminal number " << (*(pointer + i))->getNumber() << std::endl;
-					*(AvTer + j) = (*(pointer + i))->getNumber();
-					j++;
-				}
-				++i;
-			}
-			
-		}
-		return 1;
-	}
-	int AvailableDis(terminal::Terminal** pointer, int size, int* arr) {
-
-		int i{ 0 };
-		int j{ 0 };
-		while (*(pointer + i) && i < size) {
-			if ((*(pointer + i))->isFullyConnected()) {
-				*(arr + j) = (*(pointer+i))->getNumber();
-				j++;
-			}
-			i++;
-		}
-		return 1;
-	}
+	//Logic element functions
 
 	int D_Create_With_Number(logicElement::bunchOfLogicElements& bunchOfLogicElements){
 		
@@ -311,6 +280,12 @@ namespace dialog {
 	}
 	int D_Enter_Logic_Element(logicElement::bunchOfLogicElements& bunchOfLogicElements){
 		
+		if (bunchOfLogicElements.size == 0) {
+			std::cout << "There are no logic element to reenter. Firstly create logic element" << std::endl;
+			return 1;
+		}
+		int numberOfLogicElement = NumInput<int>(0, bunchOfLogicElements.size + 1);
+		bunchOfLogicElements.logicElements[numberOfLogicElement - 1]->scan();
 		return 1;
 	}
 	int D_Get_Terminal(logicElement::bunchOfLogicElements& bunchOfLogicElements){

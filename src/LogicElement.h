@@ -40,9 +40,13 @@ namespace logicElement {
 		LogicElement(const TerminalsDefinitionStruct&, int);
 		~LogicElement();
 
-		int getNumber();
-		int getNumberOfInput();
-		int getNumberOfOutput();
+		int getNumber() const;
+		int getNumberOfInput() const;
+		int getNumberOfOutput() const;
+
+		void setNumber(int);
+		void setNumberOfInput();
+		void setNumberOfOutput();
 
 		void print();
 		void scan();

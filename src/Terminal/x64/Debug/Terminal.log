@@ -1,6 +1,2 @@
-﻿  Dialog.cpp
-  LogicElement.cpp
-  Main.cpp
-  Terminal.cpp
-  Создание кода...
+﻿  LogicElement.cpp
   Terminal.vcxproj -> D:\Git\Terminal\src\Terminal\x64\Debug\Terminal.exe

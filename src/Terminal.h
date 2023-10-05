@@ -34,7 +34,7 @@ namespace terminal {
 		void setType();
 		void setConnections();
 		void setSignal();
-		void setNumber();
+		void setNumber(int);
 
 
 		void print() const;
@@ -45,6 +45,7 @@ namespace terminal {
 
 		bool isFullyConnected() const;
 		void printConnections() const;
+
 		void IncreaseConnections();
 		void DecreaseConnections();
 	};
@@ -52,8 +53,8 @@ namespace terminal {
 	struct bunchOfTerminals {
 
 		Terminal** arr = new Terminal * [5]();
-		int size{ 5 };
-		int capacity{ 0 };
+		int size{ 0 };
+		int capacity{ 5 };
 		~bunchOfTerminals();
 	};
 

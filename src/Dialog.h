@@ -31,9 +31,6 @@ namespace dialog {
 
 	terminal::Terminal** expansion(terminal::bunchOfTerminals&);
 	void copyValues(terminal::bunchOfTerminals& , terminal::Terminal**);
-	int Available(terminal::Terminal**, int, int*);
-	void ArrErase(terminal::bunchOfTerminals& );
-	int AvailableDis(terminal::Terminal**, int, int*);
 	
 	
 	int D_Create_With_Number(logicElement::bunchOfLogicElements&);

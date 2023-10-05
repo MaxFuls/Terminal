@@ -2,6 +2,7 @@
 #include "LogicElement.h"
 #include "Terminal.h"
 #include "Dialog.h"
+#include <format>
 
 namespace logicElement {
 
@@ -16,11 +17,11 @@ namespace logicElement {
 		
 		if (terminalDefinitions != nullptr) {
 			terminalDefinitions[i].scan();
+			if (terminalDefinitions[i].type == "Input")
+				++numberOfInputTerminals;
+			else
+				++numberOfOutputTerminals;
 		}
-		if (terminalDefinitions[i].type == "Input")
-			++numberOfInputTerminals;
-		else
-			++numberOfOutputTerminals;
 	}
 	bunchOfLogicElements::~bunchOfLogicElements() {
 
@@ -62,7 +63,7 @@ namespace logicElement {
 		std::string Output = "Output";
 		int i{ 0 };
 		this->number = number;
-		inputTerminals = new terminal::Terminal*[numberOfInputTerminals];
+		inputTerminals = new terminal::Terminal* [numberOfInputTerminals];
 		for (i; i < numberOfInputTerminals; ++i)
 			inputTerminals[i] = new terminal::Terminal(Input, i + 1);
 		this->numberOfInputTerminals = numberOfInputTerminals;
@@ -106,34 +107,77 @@ namespace logicElement {
 		delete[] outputTerminals;
 	}
 
-	int LogicElement::getNumber() {
+	int LogicElement::getNumber() const {
 
 		return number;
 	}
-	int LogicElement::getNumberOfInput() {
+	int LogicElement::getNumberOfInput() const {
 
 		return numberOfInputTerminals;
 	}
-	int LogicElement::getNumberOfOutput() {
+	int LogicElement::getNumberOfOutput() const {
 
 		return numberOfOutputTerminals;
+	}
+
+	void LogicElement::setNumber(int) {
+
+	}
+	void LogicElement::setNumberOfInput(){
+	}
+	void LogicElement::setNumberOfOutput() {
+
 	}
 
 	void LogicElement::print() {
 		
 		int i{ 0 };
-		std::cout << "Logic element number " << number << std::endl;
-		std::cout << "Number of input terminals is " << numberOfInputTerminals << std::endl;
-		std::cout << "Their states are " << std::endl << std::endl;
+		std::string s1 = "Logic element number";
+		std::string s2 = "Number of input terminals is";
+		std::string s3 = "Number of output terminals is";
+		std::string s4 = "Their states are:";
+		std::cout << std::format("{} {}\n{} {}\n{}\n\n",s1, number, s2, numberOfInputTerminals, s4);
 		for (i; i < numberOfInputTerminals; ++i)
 			inputTerminals[i]->print();
-		std::cout << "Number of output terminals is " << numberOfOutputTerminals << std::endl;
-		std::cout << "Their states are " << std::endl;
+		std::cout << std::format("{} {}\n{}\n\n", s3, numberOfOutputTerminals, s4);
 		for (i = 0; i < numberOfOutputTerminals; ++i)
 			outputTerminals[i]->print();
 
 	}
 	void LogicElement::scan() {
 
+		if (inputTerminals != nullptr) {
+			delete[] inputTerminals;
+			for (int i{ 0 }; i < numberOfInputTerminals; ++i)
+				delete inputTerminals[i];
+		}
+		if (outputTerminals != nullptr) {
+			delete[] outputTerminals;
+			for (int i{ 0 }; i < numberOfOutputTerminals; ++i)
+				delete outputTerminals[i];
+		}
+		std::cout << "Enter number of logic element" << std::endl;
+		number = dialog::NumInput<int>(0, std::numeric_limits<int>::max());
+		std::cout << "Enter number of input terminals" << std::endl;
+		numberOfInputTerminals = dialog::NumInput<int>(0, std::numeric_limits<int>::max());
+		std::cout << "Enter number of output terminals" << std::endl;
+		numberOfOutputTerminals = dialog::NumInput<int>(0, std::numeric_limits<int>::max());
+		inputTerminals = new terminal::Terminal * [numberOfInputTerminals];
+		outputTerminals = new terminal::Terminal * [numberOfOutputTerminals];
+		std::cout << "Enter states of input terminals" << std::endl;
+		int i{ 0 };
+		std::string Input = "Input";
+		std::string Output = "Output";
+		for (i; i < numberOfInputTerminals; ++i) {
+			inputTerminals[i] = new terminal::Terminal(Input, i+1);
+			inputTerminals[i]->setConnections();
+			inputTerminals[i]->setSignal();
+		}
+		std::cout << "Enter states of output terminals" << std::endl;
+		for (i = 0; i < numberOfOutputTerminals; ++i) {
+			outputTerminals[i] = new terminal::Terminal(Output, i + 1);
+			outputTerminals[i]->setConnections();
+			outputTerminals[i]->setSignal();
+		}
 	}
 }

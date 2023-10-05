@@ -7,7 +7,7 @@ namespace dialog {
 	const int numberOfMessagesForDialog = sizeof(messagesForDialog) / sizeof(messagesForDialog[0]);
 
 	const char* messagesForTerminal[] = { "0.Quite", "1.Create terminal with type of terminal, number of connections and state of signal",
-											"2.Create terminal only with type of terminal",  "3.Enter the terminal", "4.Connect two terminals"
+											"2.Create terminal only with type of terminal",  "3.Enter the terminal", "4.Connect two terminals",
 												"5.Disconnect two terminals","6.Print state of terminal", "7.Print connected terminals"}; 
 	const int numberOfMessagesForTerminal = sizeof(messagesForTerminal) / sizeof(messagesForTerminal[0]);
 	int (*dialogFunctionsForTerminal[])(terminal::bunchOfTerminals&) = { D_Create_Full, D_Create, D_Enter, D_Connect, D_Disconnect, D_Print, D_Print_Connections };
@@ -22,7 +22,7 @@ namespace dialog {
 																							D_Print_Logic_Elements};
 }
 int main() {
-
+	
 	terminal::bunchOfTerminals bunchOfTerminals;
 	logicElement::bunchOfLogicElements bunchOfLogicElements;
 	int al1;
