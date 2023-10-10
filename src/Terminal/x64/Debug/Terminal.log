@@ -1,2 +1,10 @@
-﻿  LogicElement.cpp
-  Terminal.vcxproj -> D:\Git\Terminal\src\Terminal\x64\Debug\Terminal.exe
+﻿  Dialog.cpp
+D:\Git\Terminal\src\Dialog.cpp(58,26): warning C4101: ba: неиспользованная локальная переменная
+D:\Git\Terminal\src\Dialog.cpp(71,26): warning C4101: ba: неиспользованная локальная переменная
+  LogicElement.cpp
+  Main.cpp
+  Terminal.cpp
+  Создание кода...
+D:\Git\Terminal\src\Terminal.cpp(84): warning C4172: возвращение адреса локальной или временной переменной
+D:\Git\Terminal\src\Terminal.cpp(86): warning C4172: возвращение адреса локальной или временной переменной
+D:\Git\Terminal\src\LogicElement.cpp(178): error C4716: logicElement::getTerminal: должна возвращать значение

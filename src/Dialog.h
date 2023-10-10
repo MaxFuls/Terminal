@@ -1,53 +1,11 @@
 #pragma once
 #pragma warning(disable:4996)
 #include <iostream>
-#include <string>
 #include "Terminal.h"
 #include "LogicElement.h"
+#include "Vector.h"
 
 namespace dialog {
-
-	int dialog(const char* [], const int);
-
-
-	int D_Create_Full (terminal::bunchOfTerminals&);
-	int D_Create(terminal::bunchOfTerminals&);
-	int D_Connect(terminal::bunchOfTerminals&);
-	int D_Disconnect(terminal::bunchOfTerminals&);
-	int D_Print(terminal::bunchOfTerminals&);
-	int D_Print_Connections(terminal::bunchOfTerminals&);
-	int D_Enter(terminal::bunchOfTerminals&);
-
-
-	std::string getType();
-	int getNum(std::string&);
-	char getSignal();
-
-
-	void createTerminal(terminal::bunchOfTerminals&, std::string&, int, char);
-	void createTerminal(terminal::bunchOfTerminals&, std::string&);
-	void createTerminal(terminal::bunchOfTerminals&);
-
-
-	terminal::Terminal** expansion(terminal::bunchOfTerminals&);
-	void copyValues(terminal::bunchOfTerminals& , terminal::Terminal**);
-	
-	
-	int D_Create_With_Number(logicElement::bunchOfLogicElements&);
-	int D_Create_With_Array(logicElement::bunchOfLogicElements&);
-	int D_Enter_Logic_Element(logicElement::bunchOfLogicElements&);
-	int D_Get_Terminal(logicElement::bunchOfLogicElements&);
-	int D_Connect_Logic_Elements(logicElement::bunchOfLogicElements&);
-	int D_Print_Logic_Elements(logicElement::bunchOfLogicElements&);
-
-	void createLogicElement(logicElement::bunchOfLogicElements&);
-	void createLogicElement(logicElement::bunchOfLogicElements& ,int, int);
-	void createLogicElement(logicElement::bunchOfLogicElements&, logicElement::TerminalsDefinitionStruct&);
-
-	logicElement::LogicElement** expansionLogic(logicElement::bunchOfLogicElements&);
-	void copyValuesLogic(logicElement::bunchOfLogicElements&, logicElement::LogicElement**);
-
-	void logicErase(logicElement::bunchOfLogicElements&);
 
 	template <class T>
 	T NumInput(T min, T max) {
@@ -63,7 +21,7 @@ namespace dialog {
 				std::cin.clear();
 				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			}
-			else if (a > min && a < max)
+			else if (a >= min && a <= max)
 				return a;
 			else {
 				std::cout << "Repeat please" << std::endl;
@@ -72,5 +30,26 @@ namespace dialog {
 			}
 		}
 	}
+
+	int dialog(const char* [], const int);
+
+	//Terminals' dialog functions
+
+	int createFull(vector::Vector<terminal::Terminal>&);
+	int createWithType(vector::Vector<terminal::Terminal>&);
+	int connect(vector::Vector<terminal::Terminal>&);
+	int disconnect(vector::Vector<terminal::Terminal>&);
+	int print(vector::Vector<terminal::Terminal>&);
+	int enter(vector::Vector<terminal::Terminal>&);
+
+	//Logic Elements' dialog functions
+
+	int createWithNumber(vector::Vector<logicElement::LogicElement>&);
+	int createWithArray(vector::Vector<logicElement::LogicElement> &);
+	int enter(vector::Vector<logicElement::LogicElement> &);
+	int getTerminal(vector::Vector<logicElement::LogicElement> &);
+	int connect(vector::Vector<logicElement::LogicElement> &);
+	int print(vector::Vector<logicElement::LogicElement> &);
+
 
 }

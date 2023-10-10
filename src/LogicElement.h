@@ -1,66 +1,61 @@
 #pragma once
 #include "Terminal.h"
-namespace logicElement {
-	
-	struct TerminalsDefinition {
+#include "Dialog.h"
+#include "Vector.h"
 
-		std::string type;
+namespace logicElement {
+
+	struct Definitions {
+
+		terminal::Type type;
 		int connections;
-		char signal;
+		terminal::Signal signal;
 
 		void scan();
 	};
+	struct DefStruct {
 
-	struct TerminalsDefinitionStruct {
+		int	length;
+		int numInput = 0;
+		int numOutput = 0;
+		Definitions* definitions;
 
-		int length = 0;
-		int numberOfInputTerminals = 0;
-		int numberOfOutputTerminals = 0;
-		TerminalsDefinition* terminalDefinitions = nullptr;
-
-		TerminalsDefinitionStruct(int);
-		~TerminalsDefinitionStruct();
-		void scan(int);
+		DefStruct(int);
+		~DefStruct();
+		void scan();
 
 	};
-	
 	class LogicElement {
+
 	private:
 
 		int number;
-		terminal::Terminal** inputTerminals;
-		int numberOfInputTerminals;
-		terminal::Terminal** outputTerminals;
-		int numberOfOutputTerminals;
+		int numInput;
+		vector::Vector<terminal::Terminal> inputTerminals;
+		int numOutput;
+		vector::Vector<terminal::Terminal> outputTerminals;
 
 	public:
 
 		LogicElement();
 		LogicElement(int, int, int);
-		LogicElement(const TerminalsDefinitionStruct&, int);
-		~LogicElement();
+		LogicElement(const DefStruct&, int);
+		LogicElement(const LogicElement&);
+		LogicElement& operator=(const LogicElement&);
 
 		int getNumber() const;
 		int getNumberOfInput() const;
 		int getNumberOfOutput() const;
 
 		void setNumber(int);
-		void setNumberOfInput();
-		void setNumberOfOutput();
+		void setNumberOfInput(int);
+		void setNumberOfOutput(int);
 
 		void print();
 		void scan();
+		void addTerminal(const terminal::Terminal&);
+		void connect(LogicElement&);
+		const terminal::Terminal& getTerminal(int);
 
-
-
-	};
-
-	struct bunchOfLogicElements {
-
-		int size = 0;
-		int capacity = 5;
-		LogicElement** logicElements = new LogicElement*[5]();
-
-		~bunchOfLogicElements();
 	};
 }

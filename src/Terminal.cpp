@@ -5,319 +5,196 @@
 #include <format>
 namespace terminal {
 
-	bunchOfTerminals::~bunchOfTerminals() {
 
-		if (capacity != 0) {
-			for (int i{ 0 }; i < capacity; ++i)
-				delete arr[i];
+	Terminal::Terminal() : number(0), type(Type::INPUT), connections(0), signal(Signal::X) {	}																	
+	Terminal::Terminal(Type type, int connections, Signal signal, int number) : number(number), type(type) {
+		
+		if (type == Type::INPUT) {
+			if (connections == 1) {
+				this->connections = connections;
+				this->signal = signal;
+			}
+			else if(connections == 0) {
+				this->connections = 0;
+				this->signal = Signal::X;
+			}
+			else {
+				this->connections = 0;
+				this->signal = Signal::X;
+				throw std::invalid_argument("Incorrect number of connections for this type of terminal");
+			}
+		
 		}
-		delete[] arr;
+		else {
+			if (connections >= 0 && connections <= 3) {
+				this->connections = connections;
+				this->signal = signal;
+			}
+			else {
+				this->connections = 0;
+				this->signal = Signal::X;
+				throw std::invalid_argument("Incorrect number of connections for this type of terminal");
+			}
+		}
+	}
+	Terminal::Terminal(Type type, int number) : number(number), type(type), connections(0), signal(Signal::X) {  }
+	Terminal::Terminal(const Terminal& terminal) {
+
+		number = terminal.number;
+		type = terminal.type;
+		connections = terminal.connections;
+		signal = terminal.signal;
 	}
 
-	Terminal::Terminal() {
-
-		number = 0;
-		type = "unknown";
-		connections = 0;
-		signal = 'X';
-		//std::fill
-		ConnectedTerminals[0] = nullptr;
-		ConnectedTerminals[1] = nullptr;
-		ConnectedTerminals[2] = nullptr;
-	}																	
-	Terminal::Terminal(std::string& type, int connections, char signal, int number) {
-
-		this->number = number;
-		this->type = type;
-		this->connections = connections;
-		this->signal = signal;
-		ConnectedTerminals[0] = nullptr;
-		ConnectedTerminals[1] = nullptr;
-		ConnectedTerminals[2] = nullptr;
-	}
-	Terminal::Terminal(std::string& type, int number) {
-
-		this->number = number;
-		this->type = type;
-		connections = 0;
-		signal = 'X';
-		ConnectedTerminals[0] = nullptr;
-		ConnectedTerminals[1] = nullptr;
-		ConnectedTerminals[2] = nullptr;
-	}
-	Terminal::Terminal(std::string& type) {
-
-		number = 0;
-		this->type = type;
-		connections = 0;
-		signal = 'X';
-		ConnectedTerminals[0] = nullptr;
-		ConnectedTerminals[1] = nullptr;
-		ConnectedTerminals[2] = nullptr;
-	}
-
-
-	void Terminal::IncreaseConnections() {
-		if (type == "Input") {
-			if (connections == 0)
+	void Terminal::increaseConnections() {
+		if (type == Type::INPUT) {
+			if (!connections)
 				++connections;
 			else
-				std::cout << "Max number of connections for input terminal is 1" << std::endl;
+				throw std::logic_error("Max number of connections for input terminal is 1");
 		}
-		else if (type == "Output") {
+		else {
 			if (connections < 3)
 				++connections;
 			else
-				std::cout << "Max number of connections for input terminal is 3";
+				throw std::logic_error("Max number of connections for input terminal is 3");
 		}
-		else
-			std::cout << "Type of terminal is unknow, firstly enter type of terminal" << std::endl;
 
 	}
-	void Terminal::DecreaseConnections(){
-		if (type == "Input") {
+	void Terminal::decreaseConnections(){
+		if (type == Type::INPUT) {
 
-			if (connections > 0)
+			if (connections)
 				--connections;
 			else
-				std::cout << "Number of connections is already 0" << std::endl;
+				throw std::logic_error("Number of connections is already 0");
 		}
-		else if (type == "Output") {
+		else {
 
-			if (connections > 0)
+			if (connections)
 				--connections;
 			else
-				std::cout << "Number of connections is already 0";
+				throw std::logic_error("Number of connections is already 0");
 		}
-		else
-			std::cout << "Type of terminal is unknow, firstly enter type of terminal" << std::endl;
 	}
 
-	std::string Terminal::getType() const {
+	const std::string& Terminal::getType() const {
 
-		return type;
+		if (type == Type::INPUT)
+			return "Input";
+		else
+			return "Output";
 	}
 	int  Terminal::getConnections() const {
 
 		return connections;
 	}
 	char  Terminal::getSignal() const {
-
-		return signal;
+		if (signal == Signal::ON)
+			return '1';
+		else if (signal == Signal::OFF)
+			return '0';
+		else
+			return 'X';
 	}
 	int Terminal::getNumber() const{
 
 		return number;
 	}
 
+	void Terminal::setType(Type type) {
 
-	void Terminal::setType() {
+		this->type = type;
+	}
+	void Terminal::setConnections(int connections) {
 
-		int type;
-		std::cout << "0.Input" << std::endl << "1.Output" << std::endl;
-		type = dialog::NumInput<int>(-1, 2);
-		if (type)
-			this->type = "Output";
+		if (type == Type::INPUT) {
+			if (connections < 0 || connections>1) {
+				throw std::invalid_argument("Number of connections for input terminal is 0 or 1");
+			}
+			else if (connections == 0) {
+				this->connections = connections;
+				signal = Signal::X;
+			}
+			else
+				this->connections = connections;
+		}
+		else {
+			if (connections < 0 || connections>3) {
+				throw std::invalid_argument("Number of connections for output terminal is 0, 1, 2 or 3");
+			}
+			else
+				this->connections = connections;
+		}
+		
+	}
+	void Terminal::setSignal(Signal signal) {
+
+		if (type == Type::INPUT) {
+			if (!connections && signal != Signal::X)
+				throw std::invalid_argument("state of signal for input terminal without connections is X");
+			else
+				this->signal = signal;
+		}
 		else
-			this->type = "Input";
-	}
-	void Terminal::setConnections() {
-
-		int connections;
-		while (true) {
-			if (type == "Input") {
-
-				std::cout << "For input terminal max number of connections is 1" << std::endl;
-				connections = dialog::NumInput<int>(-1, 2);
-				this->connections = connections;
-				break;
-			}
-			else if (type == "Output") {
-
-				std::cout << "For output terminal max number of connections is 3" << std::endl;
-				connections = dialog::NumInput<int>(-1, 4);
-				this->connections = connections;
-				break;
-			}
-			else {
-				std::cout << "Type of terminal is unknow, firstly enter type of terminal" << std::endl;
-				setType();
-			}
-		}
-	}
-	void Terminal::setSignal() {
-
-		int signal;
-		while (true) {
-			if (type == "Input" && connections == 0) {
-
-					std::cout << "Input terminal without connections can have only X signal" << std::endl;
-					this->signal = 'X';
-					break;
-			}
-			else if (type == "Input" || type == "Output") {
-
-				std::cout << "0.Type of signal is 0" << std::endl << "1.Type of signal is 1" << std::endl << "2.Type of signal is X"<<std::endl;
-				signal = dialog::NumInput<int>(-1, 4);
-				if (!signal)
-					this->signal = '0';
-				else if (signal == 1)
-					this->signal = '1';
-				else
-					this->signal = 'X';
-				break;
-			}
-			else {
-				std::cout << "Type of terminal is unknow, firstly enter type of terminal" << std::endl;
-				setType();
-			}
-		}
+			this->signal = signal;
 	}
 	void Terminal::setNumber(int number) {
 			
 		if (number > 0) 
 			this->number = number;
 		else
-			std::cout << "Number need be positive" << std::endl;
+			throw std::invalid_argument("Number need be positive");
 			
 	}
 
-
-	int Terminal::setConnectedTerminals(Terminal* pointer) {
-		
-		int i{ 0 };
-		while (i < 3  && ConnectedTerminals[i] != nullptr) {
-			++i;
-		}
-		ConnectedTerminals[i] = pointer;
-		++connections;
-		return 1;
-
-	}
-	int Terminal::reSetConnectedTerminals(Terminal* pointer) {
-
-		int i{ 0 };
-		while (i < 3 && ConnectedTerminals[i] != pointer) {
-			i++;
-		}
-		ConnectedTerminals[i] = nullptr;
-		--connections;
-		return 1;
-	}
-
-
 	void Terminal::scan() {
 
-		std::cout << "Enter type of terminal"<<std::endl;
-		setType();
-		std::cout << "Enter number of connections" << std::endl;
-		setConnections();
-		std::cout << "Enter type of signal" << std::endl;
-		setSignal();
+		std::cout << std::format("{}\n", "Enter number of terminal");
+		setNumber(dialog::NumInput<int>(0, std::numeric_limits<int>::max()));
+		std::cout << std::format("{}\n{}\n{}\n", "Enter type of terminal", "0.Output", "1.Input");
+		setType(static_cast<Type>(dialog::NumInput<int>(0,1)));
+		std::cout << std::format("{}\n", "Enter number of connections: for input 0 or 1, for output: 0, 1, 2 or 3");
+		setConnections(dialog::NumInput<int>(0, 3));
+		std::cout << std::format("{}\n{}\n{}\n","Enter state of signal","0.Off","1.On","2.X");
+		setSignal(static_cast<Signal>(dialog::NumInput(0, 2)));
 
 	}
 	void Terminal::print() const {
 
-		std::string s1 = "Terminal number";
-		std::string s2 = "Type of terminal is";
-		std::string s3 = "Number of connections is";
-		std::string s4 = "State of signal is";
-		std::string s5 = std::format("{} {}\n{} {}\n{} {}\n{} {}\n\n", s1, number, s2, type, s3, connections, s4, signal);
-		std::cout << s5;
+		std::string type;
+		char signal;
+		if (this->signal == Signal::ON)
+			signal = '1';
+		else if (this->signal == Signal::OFF)
+			signal = '0';
+		else
+			signal = 'X';
+		if (this->type == Type::INPUT)
+			type = "Input";
+		else
+			type = "Output";
+		std::cout << std::format("{} {}\n{} {}\n{} {}\n{} {}\n\n","Terminal number is", number,"Type of terminal is", type, "Number of connections is",
+									connections, "State of signal is", signal);			
 	}
 
-	void Terminal::connect(Terminal* terminal) {
+	void Terminal::connect(Terminal& terminal) {
 
-		if (terminal->number == number)
-			throw std::logic_error("You try to connect the same terminal");
-		if (type=="Input")
-			throw std::logic_error("The first terminal need to be output");
-		if (terminal->type == "Output")
-			throw std::logic_error("The second terminal need to be input");
-		if (isFullyConnected())
-			throw std::logic_error("The first terminal can not be connected more, firstly you need to disconnect it");
-		if (terminal->isFullyConnected())
-			throw std::logic_error("The second terminal can not be connected more, firstly you need to disconnect it");
+		if (type != Type::OUTPUT || terminal.type != Type::INPUT)
+			throw std::invalid_argument("Type of the first terminal need to output, the second is input");
+		if (connections == 3 || terminal.connections == 1)
+			throw std::invalid_argument("Incorrect number of connections for connect");
+		++connections;
+		++terminal.connections;
+	}
+	void Terminal::disconnect(Terminal& terminal) {
 		
-		while (true) {
-			if (type == "Input") {
-				
-				std::cout << "First terminal need to be output" << std::endl;
-				break;
-			}
-			else if (type == "Output") {
-				int i{ 0 };
-				while (ConnectedTerminals[i] != nullptr) {
-					if (ConnectedTerminals[i] == terminal)
-						throw std::logic_error("This terminals are already connected");
-					++i;
-				}
-				ConnectedTerminals[i] = terminal;
-				terminal->setConnectedTerminals(this);
-				++connections;
-				break;
-			}
-			else {
-				std::cout << "Type of terminal is unknown. Firstly you need to initialize this terminal" << std::endl;
-				scan();
-			}
-		}
-	}
-	void Terminal::disconnect(Terminal* terminal) {
-
-		if (terminal->number == number)
-			throw std::logic_error("You try to disconnect the same terminal");
-		if (type == "Input")
-			throw std::logic_error("The first terminal need to be output");
-		if (!connections)
-			throw std::logic_error("The first terminal is not connected at all");
-		if (!terminal->connections)
-			throw std::logic_error("The second terminal is not connected at all");
-		int i{ 0 };
-		while (i < 3 && ConnectedTerminals[i] != terminal)
-			++i;
-		if (i == 3)
-			throw std::logic_error("This terminals are not connected");
-		else {
-			ConnectedTerminals[i] = nullptr;
-			terminal->reSetConnectedTerminals(this);
-			--connections;
-		}
-	}
-	
-	
-	void Terminal::printConnections() const{
-
-		int i{ 0 };
-		if (ConnectedTerminals[0]!=nullptr) {
-			std::cout << "Terminal " << number << " is connected with terminals ";
-			while (i < 3 && ConnectedTerminals[i]!=nullptr) {
-				std::cout << ConnectedTerminals[i]->getNumber() << " ";
-				++i;
-			}
-			std::cout << std::endl;
-		}
-		else {
-			std::cout << "Terminal " << number << " is not connected" << std::endl;
-		}
-	}
-	bool Terminal::isFullyConnected() const{
-		
-		if (type == "Input") {
-			if (connections==1)
-				return true;
-			else
-				return false;
-		}
-		else if (type == "Output") {
-			if (connections == 3)
-				return true;
-			else
-				return false;
-		}
-		else {
-			return true;
-		}
+		if (type != Type::OUTPUT || terminal.type != Type::INPUT)
+			throw std::invalid_argument("Type of the first terminal need to output, the second is input");
+		if (!connections || !terminal.connections)
+			throw std::invalid_argument("Incorrect number of connections for disconnect");
+		--connections;
+		--terminal.connections;
 	}
 	
 }

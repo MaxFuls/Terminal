@@ -2,60 +2,42 @@
 #include <string>
 namespace terminal {
 
-	class Terminal{
+	enum class Type { OUTPUT, INPUT };
+	enum class Signal { OFF, ON, X };
 
+	class Terminal{
+	
 	private:
 
 		int number;
-		std::string type;
+		Type type;
 		int connections;
-		char signal;
-		Terminal* ConnectedTerminals[3];
-
-	protected:
-
-		int setConnectedTerminals(Terminal*);
-		int reSetConnectedTerminals(Terminal*);
-
+		Signal signal;
+	
 	public:
 
 		Terminal();
-		Terminal(std::string&, int, char, int);
-		Terminal(std::string&, int);
-		Terminal(std::string&);
+		Terminal(Type, int, Signal, int);
+		Terminal(Type, int);
+		Terminal(const Terminal&);
 
-
-		std::string getType() const;
+		const std::string& getType() const;
 		int getConnections() const;
 		char getSignal() const;
 		int getNumber() const;
 
-
-		void setType();
-		void setConnections();
-		void setSignal();
+		void setType(Type);
+		void setConnections(int);
+		void setSignal(Signal);
 		void setNumber(int);
-
 
 		void print() const;
 		void scan();
 
-		void connect(Terminal*);
-		void disconnect(Terminal*);
+		void connect(Terminal&);
+		void disconnect(Terminal&);
 
-		bool isFullyConnected() const;
-		void printConnections() const;
-
-		void IncreaseConnections();
-		void DecreaseConnections();
+		void increaseConnections();
+		void decreaseConnections();
 	};
-
-	struct bunchOfTerminals {
-
-		Terminal** arr = new Terminal * [5]();
-		int size{ 0 };
-		int capacity{ 5 };
-		~bunchOfTerminals();
-	};
-
 }

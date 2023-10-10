@@ -1,110 +1,93 @@
 #include <iostream>
-#include "LogicElement.h"
+#include <format>
 #include "Terminal.h"
 #include "Dialog.h"
-#include <format>
+#include "Vector.h"
+#include "LogicElement.h"
 
 namespace logicElement {
 
-	TerminalsDefinitionStruct::TerminalsDefinitionStruct(int numberOfTerminals) {
-
-		numberOfInputTerminals = 0;
-		numberOfOutputTerminals = 0;
-		length = numberOfTerminals;
-		terminalDefinitions = new TerminalsDefinition[numberOfTerminals];
+	DefStruct::DefStruct(int numTerminals): length(numTerminals), numInput(0), numOutput(0) {
+	
+		definitions = new Definitions[numTerminals];
 	}
-	void TerminalsDefinitionStruct::scan(int i) {
+	DefStruct::~DefStruct() {
+
+		delete[] definitions;
+	}
+	void DefStruct::scan() {
 		
-		if (terminalDefinitions != nullptr) {
-			terminalDefinitions[i].scan();
-			if (terminalDefinitions[i].type == "Input")
-				++numberOfInputTerminals;
-			else
-				++numberOfOutputTerminals;
+		if (definitions != nullptr) {
+			for (int i{ 0 }; i < length; ++i) {
+				definitions[i].scan();
+				if (definitions[i].type == terminal::Type::INPUT)
+					++numInput;
+				else
+					++numOutput;
+			}
 		}
 	}
-	bunchOfLogicElements::~bunchOfLogicElements() {
+	void Definitions::scan() {
 
-		if (size != 0) {
-			for (int i{ 0 }; i < size; ++i)
-				delete logicElements[i];
-		}
-		delete[] logicElements;
-	}
-	TerminalsDefinitionStruct::~TerminalsDefinitionStruct() {
-
-		if (terminalDefinitions != nullptr)
-			delete[] terminalDefinitions;
-	}
-
-	void TerminalsDefinition::scan() {
-
-		type = dialog::getType();
-		connections = dialog::getNum(type);
-		if (connections == 0 && type == "Input"){
-			std::cout << "For input terminal without connections state of signal is X" << std::endl;
-			signal = 'X';
-		}
+		std::cout << std::format("Enter type of terminal\n0.Output\n1.Input\n");
+		type = static_cast<terminal::Type>(dialog::NumInput(0, 1));
+		std::cout << std::format("Enter number of connections: 0 or 1 for input terminal, from 0 to 3 for output\n");
+		if (type == terminal::Type::INPUT)
+			connections = dialog::NumInput(0, 1);
 		else
-			signal = dialog::getSignal();
+			connections = dialog::NumInput(0, 3);
+		if (type == terminal::Type::INPUT && !connections) {
+			std::cout << std::format("For input terminal with 0 connections state of signal is X");
+			signal = terminal::Signal::X;
+		}
+		else {
+			std::cout << std::format("Enter state of signal\n0.Off\n1.On\n2.X\n");
+			signal = static_cast<terminal::Signal>(dialog::NumInput(0, 2));
+		}
 	}
 
-	LogicElement::LogicElement() {
 
-		number = 0;
-		inputTerminals = nullptr;
-		numberOfInputTerminals = 0;
-		outputTerminals = nullptr;
-		numberOfOutputTerminals = 0;
-	}
-	LogicElement::LogicElement(int numberOfInputTerminals, int numberOfOutputTerminals, int number) {
+	LogicElement::LogicElement(): number(0), numInput(0) , numOutput(0)	{	}
+	LogicElement::LogicElement(int numInput, int numOutput, int number) : number(number), numInput(numInput), inputTerminals(numInput)
+									,numOutput(numOutput), outputTerminals(numOutput){
 
-		std::string Input = "Input";
-		std::string Output = "Output";
 		int i{ 0 };
-		this->number = number;
-		inputTerminals = new terminal::Terminal* [numberOfInputTerminals];
-		for (i; i < numberOfInputTerminals; ++i)
-			inputTerminals[i] = new terminal::Terminal(Input, i + 1);
-		this->numberOfInputTerminals = numberOfInputTerminals;
-		outputTerminals = new terminal::Terminal*[numberOfOutputTerminals];
-		for (i = 0; i < numberOfOutputTerminals; ++i)
-			outputTerminals[i] = new terminal::Terminal(Output, i + 1);
-		this->numberOfOutputTerminals = numberOfOutputTerminals;
+		for (i; i < numInput; ++i)
+			inputTerminals.pushback(terminal::Terminal(terminal::Type::INPUT, i+1));
+		for (i = 0; i < numOutput; ++i)
+			outputTerminals.pushback(terminal::Terminal(terminal::Type::OUTPUT, i+1));
 	}
-	LogicElement::LogicElement(const TerminalsDefinitionStruct& terminalsDefinitionStruct, int number) {
+	LogicElement::LogicElement(const DefStruct& defStruct, int number): number(number), numInput(defStruct.numInput), inputTerminals(defStruct.numInput)
+										,numOutput(defStruct.numOutput), outputTerminals(defStruct.numOutput){
 
 		int i{ 0 };
 		int j{ 0 };
 		int k{ 0 };
-		this->number = number;
-		inputTerminals = new terminal::Terminal * [terminalsDefinitionStruct.numberOfInputTerminals];
-		this->numberOfInputTerminals = terminalsDefinitionStruct.numberOfInputTerminals;
-		outputTerminals = new terminal::Terminal * [terminalsDefinitionStruct.numberOfOutputTerminals];
-		this->numberOfOutputTerminals = terminalsDefinitionStruct.numberOfOutputTerminals;
-		while (i < terminalsDefinitionStruct.length) {
-			if (terminalsDefinitionStruct.terminalDefinitions[i].type == "Input") {
-				inputTerminals[j] = new terminal::Terminal(terminalsDefinitionStruct.terminalDefinitions[i].type, 
-					terminalsDefinitionStruct.terminalDefinitions[i].connections,terminalsDefinitionStruct.terminalDefinitions[i].signal, i + 1);
-				++j;
-			}
-			else {
-				outputTerminals[k] = new terminal::Terminal(terminalsDefinitionStruct.terminalDefinitions[i].type,
-					terminalsDefinitionStruct.terminalDefinitions[i].connections, terminalsDefinitionStruct.terminalDefinitions[i].signal, i + 1);
-				++k;
-			}
-			++i;
+		for (i; i < defStruct.length; ++i) {
+			if (defStruct.definitions[i].type == terminal::Type::INPUT)
+				inputTerminals.pushback(terminal::Terminal(terminal::Type::INPUT, defStruct.definitions[i].connections, defStruct.definitions->signal, ++j));
+			else
+				outputTerminals.pushback(terminal::Terminal(terminal::Type::OUTPUT, defStruct.definitions[i].connections, defStruct.definitions[i].signal, ++k));
 		}
 	}
-	LogicElement::~LogicElement() {
+	LogicElement::LogicElement(const LogicElement& logicElement) {
 
-		int i{ 0 };
-		for (i; i < numberOfInputTerminals; ++i)
-			delete inputTerminals[i];
-		for (i = 0; i < numberOfOutputTerminals; ++i)
-			delete outputTerminals[i];
-		delete[] inputTerminals;
-		delete[] outputTerminals;
+		number = logicElement.number;
+		numInput = logicElement.numInput;
+		inputTerminals = logicElement.inputTerminals;
+		numOutput = logicElement.numOutput;
+		outputTerminals = logicElement.outputTerminals;
+
+	}
+	LogicElement& LogicElement::operator=(const LogicElement& logicElement) {
+		if (this != &logicElement) {
+			number = logicElement.number;
+			numInput = logicElement.numInput;
+			inputTerminals = logicElement.inputTerminals;
+			numOutput = logicElement.numOutput;
+			outputTerminals = logicElement.outputTerminals;
+		}
+		return *this;
 	}
 
 	int LogicElement::getNumber() const {
@@ -113,71 +96,84 @@ namespace logicElement {
 	}
 	int LogicElement::getNumberOfInput() const {
 
-		return numberOfInputTerminals;
+		return numInput;
 	}
 	int LogicElement::getNumberOfOutput() const {
 
-		return numberOfOutputTerminals;
+		return numOutput;
 	}
 
-	void LogicElement::setNumber(int) {
+	void LogicElement::setNumber(int number) {
 
+		if (number > 0)
+			this->number = number;
+		else
+			throw std::invalid_argument("Number need pe positive");
 	}
-	void LogicElement::setNumberOfInput(){
+	void LogicElement::setNumberOfInput(int numInput){
+	
+		if (numInput > 0) {
+			this->numInput = numInput;
+			inputTerminals.setSize(numInput);
+		}
+		else
+			throw std::invalid_argument("Number od input terminals need be positive");
 	}
-	void LogicElement::setNumberOfOutput() {
-
+	void LogicElement::setNumberOfOutput(int numOutput) {
+		
+		if (numOutput > 0) {
+			this->numOutput = numOutput;
+			outputTerminals.setSize(numOutput);
+		}
+		else
+			throw std::invalid_argument("Number od input terminals need be positive");
 	}
 
 	void LogicElement::print() {
 		
 		int i{ 0 };
-		std::string s1 = "Logic element number";
-		std::string s2 = "Number of input terminals is";
-		std::string s3 = "Number of output terminals is";
-		std::string s4 = "Their states are:";
-		std::cout << std::format("{} {}\n{} {}\n{}\n\n",s1, number, s2, numberOfInputTerminals, s4);
-		for (i; i < numberOfInputTerminals; ++i)
-			inputTerminals[i]->print();
-		std::cout << std::format("{} {}\n{}\n\n", s3, numberOfOutputTerminals, s4);
-		for (i = 0; i < numberOfOutputTerminals; ++i)
-			outputTerminals[i]->print();
+		std::cout << std::format("Number of logic element is {}\nNumber of input terminals is {}\n", number, numInput);
+		if (numInput) std::cout << std::format("Their states are\n\n");
+		for (i; i < numInput; ++i)
+			inputTerminals[i].print();
+		std::cout << std::format("Number of output terminals is {}\n", numOutput);
+		if (numOutput) std::cout << std::format("Their states are\n\n");
+		for (i = 0; i < numOutput; ++i)
+			outputTerminals[i].print();
 
 	}
 	void LogicElement::scan() {
 
-		if (inputTerminals != nullptr) {
-			delete[] inputTerminals;
-			for (int i{ 0 }; i < numberOfInputTerminals; ++i)
-				delete inputTerminals[i];
+		std::cout << std::format("Enter number of terminals you want to enter\n");
+		int numTerminals = dialog::NumInput<int>(1, std::numeric_limits<int>::max());
+		DefStruct defStruct(numTerminals);
+		defStruct.scan();
+		inputTerminals.clear();
+		outputTerminals.clear();
+		int j{ 1 };
+		int k{ 1 };
+		for (int i{ 0 }; i < numTerminals; ++i) {
+			if (defStruct.definitions[i].type == terminal::Type::INPUT)
+				inputTerminals.pushback(terminal::Terminal(terminal::Type::INPUT, defStruct.definitions[i].connections
+																,defStruct.definitions[i].signal, j++));
+			else
+				outputTerminals.pushback(terminal::Terminal(terminal::Type::OUTPUT, defStruct.definitions[i].connections
+																,defStruct.definitions[i].signal, k++));
 		}
-		if (outputTerminals != nullptr) {
-			delete[] outputTerminals;
-			for (int i{ 0 }; i < numberOfOutputTerminals; ++i)
-				delete outputTerminals[i];
-		}
-		std::cout << "Enter number of logic element" << std::endl;
-		number = dialog::NumInput<int>(0, std::numeric_limits<int>::max());
-		std::cout << "Enter number of input terminals" << std::endl;
-		numberOfInputTerminals = dialog::NumInput<int>(0, std::numeric_limits<int>::max());
-		std::cout << "Enter number of output terminals" << std::endl;
-		numberOfOutputTerminals = dialog::NumInput<int>(0, std::numeric_limits<int>::max());
-		inputTerminals = new terminal::Terminal * [numberOfInputTerminals];
-		outputTerminals = new terminal::Terminal * [numberOfOutputTerminals];
-		std::cout << "Enter states of input terminals" << std::endl;
-		int i{ 0 };
-		std::string Input = "Input";
-		std::string Output = "Output";
-		for (i; i < numberOfInputTerminals; ++i) {
-			inputTerminals[i] = new terminal::Terminal(Input, i+1);
-			inputTerminals[i]->setConnections();
-			inputTerminals[i]->setSignal();
-		}
-		std::cout << "Enter states of output terminals" << std::endl;
-		for (i = 0; i < numberOfOutputTerminals; ++i) {
-			outputTerminals[i] = new terminal::Terminal(Output, i + 1);
-			outputTerminals[i]->setConnections();
-			outputTerminals[i]->setSignal();
-		}
+		numInput = defStruct.numInput;
+		numOutput = defStruct.numOutput;
+	}
+
+	void addTerminal(const terminal::Terminal& terminal) {
+
+
+	}
+	void connect(LogicElement& logicElement){
+	
+	
+	}
+	const terminal::Terminal& getTerminal(int number) {
+
+		return terminal::Terminal();
 	}
 }
